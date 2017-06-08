@@ -1,0 +1,10 @@
+[
+  {
+    "question": "Do you like long walks on the beach?",
+    "choices": ["Yes", "No"]
+  }, 
+  {
+    "question": "Do you like dressing up for dinner?",
+    "choices": ["Yes", "No"]
+  }
+]

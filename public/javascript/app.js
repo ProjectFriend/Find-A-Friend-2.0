@@ -127,19 +127,16 @@ $('document').ready(function () {
         last_login: user.updated_at,
       }
 
-      // // Put the object into storage
-      // sessionStorage.setItem('currentUser', JSON.stringify(newUser));
+      // Put the object into storage
+      sessionStorage.setItem('currentUser', JSON.stringify(newUser));
 
-      // // Retrieve the object from storage
-      // var retrievedObject = sessionStorage.getItem('currentUser');
-
-      // console.log('retrievedObject: ', JSON.parse(retrievedObject));
-
+      // Retrieve the object from storage
+      var retrievedObject = JSON.parse(sessionStorage.getItem('currentUser'));
 
 
       // store user in session/local storage for future post requests? 
       //composite score
-      //updating their about me
+      //updating their "about me""
       //request to database to compare user scores to others  
       //connecting with other users
       $.post("/users/", newUser).then(function (dbUser) {
@@ -153,6 +150,15 @@ $('document').ready(function () {
         // think of ways to split up database? Ask ryo/leo for input
         console.log("sent via the server", dbUser);
         console.log("successfully sent user info to server!");
+
+        $.get("/api/loveques")
+        .then(function(questions) {
+          console.log(questions); 
+          for (var i  in questions) {
+            console.log(questions[i]); 
+          }
+        }); 
+
       });
 
     });
