@@ -16,11 +16,21 @@ function shuffleArray(array) {
 module.exports = function (app) {
   // function will be used after user logs in
   // get request to users to find user using req.params.user 
+
   // app.get("/users/:user?", function (req, res) {
   //   db.User.findAll({}).then(function (user) {
   //     return res.json(user);
   //   });
   // });
+
+  app.get("/users/matches", function(req, res) {
+
+    //look up user composite score and compare to other users in database 
+
+    db.findAll({}).then(function(data) {
+
+    }); 
+  }); 
 
   app.get("/api/loveques", function (req, res) {
     var loveQuestions = require("../questions/loveQuestions");
@@ -84,6 +94,3 @@ module.exports = function (app) {
     });
   });
 }
-
-//implement nodemailer package on signup to send user email after logging in to app 
-// "Welcome to Habbibi"
