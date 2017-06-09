@@ -19,29 +19,22 @@ $('document').ready(function () {
     scope: 'openid profile email'
   });
 
-  var loginBtn = $('#btn-login');
-
-  loginBtn.click(function (e) {
-    e.preventDefault();
-    webAuth.authorize();
-  });
-
-  var loginStatus = $('.container h4');
-  var loginView = $('#login-view');
-  var homeView = $('#home-view');
-
   // buttons and event listeners
   var homeViewBtn = $('#btn-home-view');
   var loginBtn = $('#btn-login');
   var logoutBtn = $('#btn-logout');
+
+  var loginStatus = $('.container h4');
+  var loginView = $('#login-view');
+  var homeView = $('#home-view');
 
   homeViewBtn.click(function () {
     homeView.css('display', 'inline-block');
     loginView.css('display', 'none');
   });
 
-  loginBtn.click(function (e) {
-    e.preventDefault();
+  loginBtn.click(function (event) {
+    event.preventDefault();
     webAuth.authorize();
   });
 
@@ -65,6 +58,8 @@ $('document').ready(function () {
     displayButtons();
   }
 
+  // checks to verify user is logged in? Maybe do this before any 
+  // calls to the server 
   function isAuthenticated() {
     // Check whether the current time is past the
     // access token's expiry time
@@ -101,61 +96,65 @@ $('document').ready(function () {
       loginStatus.text('You are not logged in! Please log in to continue.');
     }
   }
+
   handleAuthentication();
 
-  webAuth.parseHash(window.location.hash, function (err, authResult) {
-    if (err) {
-      return console.log(err);
-    }
-    console.log(authResult);
-    // var id_token = authResult.idToken; 
-    webAuth.client.userInfo(authResult.accessToken, function (err, user) {
-      // This method will make a request to the /userinfo endpoint 
-      // and return the user object, which contains the user's information, 
-      // similar to the response below.
-      // console.log("user.user_id " , user.user_id);
-      // console.log("user_id ", user_id); 
-      console.log(user);
-      console.log(user.email);
-      var newUser = {
-        // id_token: id_token, 
-        email: user.email,
-        name: user.name,
-        nickname: user.nickname,
-        picture: user.picture,
-        provider: user.sub,
-        last_login: user.updated_at,
+  // wrap function around this 
+  function parseHash() {
+    webAuth.parseHash(window.location.hash, function (err, authResult) {
+      if (err) {
+        return console.log(err);
       }
+      console.log(authResult);
+      // var id_token = authResult.idToken; 
+      webAuth.client.userInfo(authResult.accessToken, function (err, user) {
+        // This method will make a request to the /userinfo endpoint 
+        // and return the user object, which contains the user's information, 
+        // similar to the response below.
+        // console.log("user.user_id " , user.user_id);
+        // console.log("user_id ", user_id); 
+        console.log(user);
+        console.log(user.email);
+        var newUser = {
+          // id_token: id_token, 
+          email: user.email,
+          name: user.name,
+          nickname: user.nickname,
+          picture: user.picture,
+          provider: user.sub,
+          last_login: user.updated_at,
+        }
 
-      // // Put the object into storage
-      // sessionStorage.setItem('currentUser', JSON.stringify(newUser));
+        // Put the object into storage
+        sessionStorage.setItem('currentUser', JSON.stringify(newUser));
 
-      // // Retrieve the object from storage
-      // var retrievedObject = sessionStorage.getItem('currentUser');
-
-      // console.log('retrievedObject: ', JSON.parse(retrievedObject));
+        // Retrieve the object from storage
+        var retrievedObject = JSON.parse(sessionStorage.getItem('currentUser'));
 
 
+        // store user in session/local storage for future post requests? 
+        //composite score
+        //updating their "about me""
+        //request to database to compare user scores to others  
+        //connecting with other users
+        $.post("/users/", newUser).then(function (dbUser) {
 
-      // store user in session/local storage for future post requests? 
-      //composite score
-      //updating their about me
-      //request to database to compare user scores to others  
-      //connecting with other users
-      $.post("/users/", newUser).then(function (dbUser) {
+          // need to store user data in database
+          // grab user photo to post on page 
+          // associate blog posts with user data 
+          // maybe pick only one social media site to authorize??? 
+          // render web-page here using user information 
+          // why exactly should we have multiple tables? 
+          // think of ways to split up database? Ask ryo/leo for input
+          console.log("sent via the server", dbUser);
+          console.log("successfully sent user info to server!");
 
-        // need to store user data in database
-        // grab user photo to post on page 
-        // associate blog posts with user data 
-        // maybe pick only one social media site to authorize??? 
-        // render web-page here using user information 
-        // why exactly should we have multiple tables? 
-        // think of ways to split up database? Ask ryo/leo for input
-        console.log("sent via the server", dbUser);
-        console.log("successfully sent user info to server!");
+         
+
+        });
+
       });
-
     });
-  });
+  }
 
 });
