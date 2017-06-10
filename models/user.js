@@ -1,10 +1,6 @@
 module.exports = function(sequelize, DataTypes) {
  
     var User = sequelize.define('User', {
-        // id_token: {
-        //   type: DataTypes.TEXT, 
-        // }, 
-
         email: {
           type: DataTypes.STRING, 
         },
@@ -21,11 +17,6 @@ module.exports = function(sequelize, DataTypes) {
         picture: {
             type: DataTypes.STRING,
         },
-
-         provider: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
  
         last_login: {
             type: DataTypes.DATE
@@ -40,8 +31,19 @@ module.exports = function(sequelize, DataTypes) {
             defaultValue: 'active'
         }
  
+    }, {
+        classMethods: {
+            associate: function(models) {
+                User.hasMany(models.Posts, {
+                     onDelete: "cascade"
+                }); 
+            }
+        }
     });
  
     return User;
  
 }
+
+// implement nodemailer to recognize when a user has signed in using 
+// email sent back via auth0 
