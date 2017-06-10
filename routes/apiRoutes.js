@@ -1,5 +1,5 @@
 var db = require("../models");
-
+var nodemailer = require("./nodeMailer");
 /* Randomize array element order in-place. 
        Using Durstenfeld shuffle algorithm. */
 function shuffleArray(array) {
@@ -15,7 +15,6 @@ function shuffleArray(array) {
 module.exports = function (app) {
   // function will be used after user logs in
   // get request to users to find user using req.params.user
-
   app.get("/api/loveques", function (req, res) {
     var loveQuestions = require("../questions/loveQuestions");
     loveQuestions = shuffleArray(loveQuestions);
@@ -39,67 +38,76 @@ module.exports = function (app) {
   // create a route to update with "about me and user composite matches" 
   // maybe one route for each to avoid crossover? or have option req.params to differentiate 
   app.post("/users/", function (req, res) {
-    console.log(user);
     var user = req.body;
-    // console.log(user); 
+    console.log(user);
     db.User.findAll({
       where: {
         name: user.name,
         email: user.email
       }
-    }).then(function (dbUser) {
-
+    }).then(function(dbUser) {
+      console.log("dbUser ", dbUser[0]); 
+      var userProfile = dbUser[0]; 
       if (dbUser.length === 0) {
         db.User.create({
           email: user.email,
           name: user.name,
           nickname: user.nickname,
           picture: user.picture,
-          provider: user.sub,
           last_login: user.last_login
-        }).then(function (dbUser) {
+        }).then(function (new_dbUser) {
           console.log('no user found, but user was created!');
-          return res.json(dbUser);
+          console.log("email successfully sent!");
+          // sends email to user after first login! 
+          nodemailer(user.email);
+          return res.json(new_dbUser);
         });
       } else {
+
         console.log("user exists");
         // update last login if user exists (user.last_login) property 
-
-
-        // res.redirect(/users/:user.name) and render a page based on user information? 
-        // use url to make a get request to page to render user page and go from there to render particular infomration 
-
-        // maybe embed the get request inside the post request to populate the page correctly with user information 
-        return res.json(dbUser);
+        db.User.update({
+          last_login: user.last_login
+        }, {
+          where: {
+            name: user.name,
+            email: user.email,
+          }
+        }).then(function (updated_dbUser) {
+          console.log("successfully updated user login!");
+          // return user profile to client 
+          return res.json(userProfile);
+        });
       }
     }).catch(function (err) {
       res.send(err);
     });
   });
 
+
   app.post("/users/posts/", function (req, res) {
-
-    console.log(req.body); 
-
+    console.log(req.body);
     db.Posts.create(req.body).then(function (newPost) {
       return res.json(newPost);
     });
   });
 
-  app.get("/users/posts", function (req, res) {
-    req.body.UserId = 1; 
-    req.body.email = "eyado2011@hotmail.com"; 
 
+  // modify route to include userId 
+  app.get("/users/posts/:id", function (req, res) {
+    var UserId = req.params.id; 
     db.User.findAll({
       where: {
-        id: req.body.UserId, 
-        email: req.body.email
-      }, 
+        id: UserId
+      },
       include: [{
         model: db.Posts
-      }]
-    }).then(function(posts) {
-      return res.json(posts); 
-    })
-  })
+      }],
+      raw: true 
+    }).then(function (posts) {
+      console.log(posts); 
+      return res.json(posts);
+    });
+  });
+
 }

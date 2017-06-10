@@ -16,7 +16,7 @@ module.exports = function (sequelize, DataTypes) {
     }
   }, {
     classMethods: {
-      associate: function (models) {
+      associate: function(models) {
         Posts.belongsTo(models.User, {
           foreignKey: {
             allowNull: false
@@ -29,7 +29,3 @@ module.exports = function (sequelize, DataTypes) {
   return Posts;
 
 }
-
-// associate title: 
-// body: 
-// userId: 

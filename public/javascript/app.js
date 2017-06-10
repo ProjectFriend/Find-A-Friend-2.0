@@ -1,15 +1,6 @@
 "use strict";
 
-$('document').ready(function () {
-
-  // modularize code to operate on button click, not document.ready() 
-  // review what handleAuthentication does and try to keep initial error from appearing about token 
-
-
-  // updated user database to include facebook/google email for 
-  // node mailer? to show that the user logged in? 
-  // should we stick to only authenticating facebook to avoid 
-  // cross-over issues 
+$(document).ready(function () {
   var webAuth = new auth0.WebAuth({
     domain: "ejqassem.auth0.com",
     clientID: "kNpinf_XmKG9ExgzjJTuQrNN60TAoEOn",
@@ -19,28 +10,18 @@ $('document').ready(function () {
     scope: 'openid profile email'
   });
 
-  // buttons and event listeners
-  var homeViewBtn = $('#btn-home-view');
-  var loginBtn = $('#btn-login');
-  var logoutBtn = $('#btn-logout');
+  initHandlers();
+  handleAuthentication();
 
-  var loginStatus = $('.container h4');
-  var loginView = $('#login-view');
-  var homeView = $('#home-view');
+  function initHandlers() {
+    // buttons and event listeners
+    $('#btn-login').click(function (event) {
+      event.preventDefault();
+      webAuth.authorize();
+    });
 
-  homeViewBtn.click(function () {
-    homeView.css('display', 'inline-block');
-    loginView.css('display', 'none');
-  });
-
-  loginBtn.click(function (event) {
-    event.preventDefault();
-    webAuth.authorize();
-  });
-
-  logoutBtn.click(logout);
-
-  // handleAuthentication();
+    $('#btn-logout').click(logout);
+  }
 
   function setSession(authResult) {
     // Set the time that the access token will expire at
@@ -52,11 +33,14 @@ $('document').ready(function () {
     localStorage.setItem('expires_at', expiresAt);
   }
 
+  // return to blank screen? 
+  // render a blank page 
   function logout() {
     // Remove tokens and expiry time from localStorage
     localStorage.removeItem('access_token');
     localStorage.removeItem('id_token');
     localStorage.removeItem('expires_at');
+    sessionStorage.removeItem('currentUser'); 
     displayButtons();
   }
 
@@ -71,40 +55,35 @@ $('document').ready(function () {
 
   function displayButtons() {
     if (isAuthenticated()) {
-      loginBtn.css('display', 'none');
-      logoutBtn.css('display', 'inline-block');
-      loginStatus.text('You are logged in!');
+      $('#btn-login').css('display', 'none');
+      $('#btn-logout').css('display', 'inline-block');
+      $("#login-status").text('You are logged in!');
     } else {
-      loginBtn.css('display', 'inline-block');
-      logoutBtn.css('display', 'none');
-      loginStatus.text('You are not logged in! Please log in to continue.');
+      $('#btn-login').css('display', 'inline-block');
+      $('#btn-logout').css('display', 'none');
+      $("#login-status").text('Please login to continue!.');
     }
   }
-
-  handleAuthentication();
 
   function handleAuthentication() {
     // wrap function around this 
     webAuth.parseHash(window.location.hash, function (err, authResult) {
       if (err) {
-        // amend message to screen telling user to login!! 
+        // amend message to screen telling user to login or re-login since their token expired!! 
         console.log(err);
         alert(
           'Error: ' + err.error + '. Check the console for further details.'
         );
       } else if (authResult && authResult.accessToken && authResult.idToken) {
 
-        console.log(authResult);
         window.location.hash = '';
         setSession(authResult);
-        loginBtn.css('display', 'none');
-        homeView.css('display', 'inline-block');
+        $('#btn-login').css('display', 'none');
         // toggle showing login/logout depending on if the user is authenticated or not
         displayButtons();
 
         webAuth.client.userInfo(authResult.accessToken, function (err, user) {
           console.log(user);
-          console.log(user.email);
           var newUser = {
             email: user.email,
             name: user.name,
@@ -114,34 +93,64 @@ $('document').ready(function () {
             last_login: user.updated_at,
           }
 
-          // Put the object into storage
-          sessionStorage.setItem('currentUser', JSON.stringify(newUser));
-
-          // Retrieve the object from storage
-          var retrievedObject = JSON.parse(sessionStorage.getItem('currentUser'));
-          console.log("retrievedObject ",  retrievedObject); 
+          // send recieved user Object to database after authentication via auth0 
           postUserDB(newUser);
+
+          // renderUserProfile(newUser); 
 
         });
       }
     });
-  }
+  } 
+
+  // function renderUserProfile(newUser) {
+  //   var userImage = $("<img>"); 
+  //   userImage.attr("src", newUser.picture); 
+  //   $("#user-picture").append(userImage); 
+  // }
 
   function postUserDB(newUser) {
 
-    // all post requests are authenticated before any query is sent to the server 
-    isAuthenticated(); 
+    // all HTTP requests are authenticated before any query is sent to the server 
+    isAuthenticated();
 
     $.post("/users/", newUser).then(function (dbUser) {
 
-      console.log("sent via the server", dbUser);
-
+      // Put the user object into session storage for future reference 
+      sessionStorage.setItem('currentUser', JSON.stringify(dbUser));
+      var retrievedObject = JSON.parse(sessionStorage.getItem('currentUser'));
+      console.log("retrieved Object ", retrievedObject);
     });
+
   }
 
   function submitNewPost() {
+    // all HTTP requests are authenticated before any query is sent to the server 
+    isAuthenticated();
+
+    // referencing current user object to grab unique id used to associate Posts with User(foreignKey)
     var retrievedObject = JSON.parse(sessionStorage.getItem('currentUser'));
 
+    // var postTitle = $("#title-post").val().trim(); 
+    // var postBody = $("#body-post").val().trim(); 
+    // new post to server must follow following guidelines: 
+    // newPost = {
+    //   title: postTitle, 
+    //   body: postBody, 
+    //   "UserId": retrievedObject.id
+    // }
+
+    $.post("/user/posts/", newPost).then(function (result) {
+      console.log(result);
+    });
   }
 
+  function getPosts() {
+    // referencing current user object to grab unique id used to associate Posts with User(foreignKey)
+    var retrievedObject = JSON.parse(sessionStorage.getItem('currentUser'));
+    var UserId = retrievedObject.id;
+    $.get("/users/posts" + UserId).then(function (allPosts) {
+      // render all posts to page 
+    });
+  }
 });
