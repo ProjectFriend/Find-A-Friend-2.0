@@ -1,5 +1,4 @@
 var db = require("../models");
-var fs = require("fs");
 
 /* Randomize array element order in-place. 
        Using Durstenfeld shuffle algorithm. */
@@ -15,22 +14,7 @@ function shuffleArray(array) {
 
 module.exports = function (app) {
   // function will be used after user logs in
-  // get request to users to find user using req.params.user 
-
-  // app.get("/users/:user?", function (req, res) {
-  //   db.User.findAll({}).then(function (user) {
-  //     return res.json(user);
-  //   });
-  // });
-
-  app.get("/users/matches", function(req, res) {
-
-    //look up user composite score and compare to other users in database 
-
-    db.findAll({}).then(function(data) {
-
-    }); 
-  }); 
+  // get request to users to find user using req.params.user
 
   app.get("/api/loveques", function (req, res) {
     var loveQuestions = require("../questions/loveQuestions");
@@ -67,7 +51,6 @@ module.exports = function (app) {
 
       if (dbUser.length === 0) {
         db.User.create({
-          // id_token: user.id_token, 
           email: user.email,
           name: user.name,
           nickname: user.nickname,
@@ -93,4 +76,30 @@ module.exports = function (app) {
       res.send(err);
     });
   });
+
+  app.post("/users/posts/", function (req, res) {
+
+    console.log(req.body); 
+
+    db.Posts.create(req.body).then(function (newPost) {
+      return res.json(newPost);
+    });
+  });
+
+  app.get("/users/posts", function (req, res) {
+    req.body.UserId = 1; 
+    req.body.email = "eyado2011@hotmail.com"; 
+
+    db.User.findAll({
+      where: {
+        id: req.body.UserId, 
+        email: req.body.email
+      }, 
+      include: [{
+        model: db.Posts
+      }]
+    }).then(function(posts) {
+      return res.json(posts); 
+    })
+  })
 }

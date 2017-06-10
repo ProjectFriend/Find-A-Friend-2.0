@@ -40,6 +40,8 @@ $('document').ready(function () {
 
   logoutBtn.click(logout);
 
+  // handleAuthentication();
+
   function setSession(authResult) {
     // Set the time that the access token will expire at
     var expiresAt = JSON.stringify(
@@ -67,24 +69,6 @@ $('document').ready(function () {
     return new Date().getTime() < expiresAt;
   }
 
-  function handleAuthentication() {
-    webAuth.parseHash(function (err, authResult) {
-      if (authResult && authResult.accessToken && authResult.idToken) {
-        window.location.hash = '';
-        setSession(authResult);
-        loginBtn.css('display', 'none');
-        homeView.css('display', 'inline-block');
-      } else if (err) {
-        homeView.css('display', 'inline-block');
-        console.log(err);
-        alert(
-          'Error: ' + err.error + '. Check the console for further details.'
-        );
-      }
-      displayButtons();
-    });
-  }
-
   function displayButtons() {
     if (isAuthenticated()) {
       loginBtn.css('display', 'none');
@@ -99,62 +83,65 @@ $('document').ready(function () {
 
   handleAuthentication();
 
-  // wrap function around this 
-  function parseHash() {
+  function handleAuthentication() {
+    // wrap function around this 
     webAuth.parseHash(window.location.hash, function (err, authResult) {
       if (err) {
-        return console.log(err);
-      }
-      console.log(authResult);
-      // var id_token = authResult.idToken; 
-      webAuth.client.userInfo(authResult.accessToken, function (err, user) {
-        // This method will make a request to the /userinfo endpoint 
-        // and return the user object, which contains the user's information, 
-        // similar to the response below.
-        // console.log("user.user_id " , user.user_id);
-        // console.log("user_id ", user_id); 
-        console.log(user);
-        console.log(user.email);
-        var newUser = {
-          // id_token: id_token, 
-          email: user.email,
-          name: user.name,
-          nickname: user.nickname,
-          picture: user.picture,
-          provider: user.sub,
-          last_login: user.updated_at,
-        }
+        // amend message to screen telling user to login!! 
+        console.log(err);
+        alert(
+          'Error: ' + err.error + '. Check the console for further details.'
+        );
+      } else if (authResult && authResult.accessToken && authResult.idToken) {
 
-        // Put the object into storage
-        sessionStorage.setItem('currentUser', JSON.stringify(newUser));
+        console.log(authResult);
+        window.location.hash = '';
+        setSession(authResult);
+        loginBtn.css('display', 'none');
+        homeView.css('display', 'inline-block');
+        // toggle showing login/logout depending on if the user is authenticated or not
+        displayButtons();
 
-        // Retrieve the object from storage
-        var retrievedObject = JSON.parse(sessionStorage.getItem('currentUser'));
+        webAuth.client.userInfo(authResult.accessToken, function (err, user) {
+          console.log(user);
+          console.log(user.email);
+          var newUser = {
+            email: user.email,
+            name: user.name,
+            nickname: user.nickname,
+            picture: user.picture,
+            provider: user.sub,
+            last_login: user.updated_at,
+          }
 
+          // Put the object into storage
+          sessionStorage.setItem('currentUser', JSON.stringify(newUser));
 
-        // store user in session/local storage for future post requests? 
-        //composite score
-        //updating their "about me""
-        //request to database to compare user scores to others  
-        //connecting with other users
-        $.post("/users/", newUser).then(function (dbUser) {
-
-          // need to store user data in database
-          // grab user photo to post on page 
-          // associate blog posts with user data 
-          // maybe pick only one social media site to authorize??? 
-          // render web-page here using user information 
-          // why exactly should we have multiple tables? 
-          // think of ways to split up database? Ask ryo/leo for input
-          console.log("sent via the server", dbUser);
-          console.log("successfully sent user info to server!");
-
-         
+          // Retrieve the object from storage
+          var retrievedObject = JSON.parse(sessionStorage.getItem('currentUser'));
+          console.log("retrievedObject ",  retrievedObject); 
+          postUserDB(newUser);
 
         });
-
-      });
+      }
     });
+  }
+
+  function postUserDB(newUser) {
+
+    // all post requests are authenticated before any query is sent to the server 
+    isAuthenticated(); 
+
+    $.post("/users/", newUser).then(function (dbUser) {
+
+      console.log("sent via the server", dbUser);
+
+    });
+  }
+
+  function submitNewPost() {
+    var retrievedObject = JSON.parse(sessionStorage.getItem('currentUser'));
+
   }
 
 });
