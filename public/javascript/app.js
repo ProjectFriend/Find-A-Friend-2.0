@@ -1,11 +1,6 @@
 "use strict";
 
-$('document').ready(function () {
-  // initialize all handlers on page 
-  initHandlers();
-  // establish a current user token Id via the auth0 API 
-  handleAuthentication();
-
+$(document).ready(function () {
   var webAuth = new auth0.WebAuth({
     domain: "ejqassem.auth0.com",
     clientID: "kNpinf_XmKG9ExgzjJTuQrNN60TAoEOn",
@@ -15,27 +10,17 @@ $('document').ready(function () {
     scope: 'openid profile email'
   });
 
-  // buttons and event listeners
-  var homeViewBtn = $('#btn-home-view');
-  var loginBtn = $('#btn-login');
-  var logoutBtn = $('#btn-logout');
-
-  var loginStatus = $('.container h4');
-  var loginView = $('#login-view');
-  var homeView = $('#home-view');
+  initHandlers();
+  handleAuthentication();
 
   function initHandlers() {
-    homeViewBtn.click(function () {
-      homeView.css('display', 'inline-block');
-      loginView.css('display', 'none');
-    });
-
-    loginBtn.click(function (event) {
+    // buttons and event listeners
+    $('#btn-login').click(function (event) {
       event.preventDefault();
       webAuth.authorize();
     });
 
-    logoutBtn.click(logout);
+    $('#btn-logout').click(logout);
   }
 
   function setSession(authResult) {
@@ -48,11 +33,14 @@ $('document').ready(function () {
     localStorage.setItem('expires_at', expiresAt);
   }
 
+  // return to blank screen? 
+  // render a blank page 
   function logout() {
     // Remove tokens and expiry time from localStorage
     localStorage.removeItem('access_token');
     localStorage.removeItem('id_token');
     localStorage.removeItem('expires_at');
+    sessionStorage.removeItem('currentUser'); 
     displayButtons();
   }
 
@@ -67,13 +55,13 @@ $('document').ready(function () {
 
   function displayButtons() {
     if (isAuthenticated()) {
-      loginBtn.css('display', 'none');
-      logoutBtn.css('display', 'inline-block');
-      loginStatus.text('You are logged in!');
+      $('#btn-login').css('display', 'none');
+      $('#btn-logout').css('display', 'inline-block');
+      $("#login-status").text('You are logged in!');
     } else {
-      loginBtn.css('display', 'inline-block');
-      logoutBtn.css('display', 'none');
-      loginStatus.text('You are not logged in! Please log in to continue.');
+      $('#btn-login').css('display', 'inline-block');
+      $('#btn-logout').css('display', 'none');
+      $("#login-status").text('Please login to continue!.');
     }
   }
 
@@ -90,8 +78,7 @@ $('document').ready(function () {
 
         window.location.hash = '';
         setSession(authResult);
-        loginBtn.css('display', 'none');
-        homeView.css('display', 'inline-block');
+        $('#btn-login').css('display', 'none');
         // toggle showing login/logout depending on if the user is authenticated or not
         displayButtons();
 
@@ -109,10 +96,18 @@ $('document').ready(function () {
           // send recieved user Object to database after authentication via auth0 
           postUserDB(newUser);
 
+          // renderUserProfile(newUser); 
+
         });
       }
     });
-  }
+  } 
+
+  // function renderUserProfile(newUser) {
+  //   var userImage = $("<img>"); 
+  //   userImage.attr("src", newUser.picture); 
+  //   $("#user-picture").append(userImage); 
+  // }
 
   function postUserDB(newUser) {
 
@@ -124,8 +119,9 @@ $('document').ready(function () {
       // Put the user object into session storage for future reference 
       sessionStorage.setItem('currentUser', JSON.stringify(dbUser));
       var retrievedObject = JSON.parse(sessionStorage.getItem('currentUser'));
-      console.log(retrievedObject);
+      console.log("retrieved Object ", retrievedObject);
     });
+
   }
 
   function submitNewPost() {
@@ -152,10 +148,9 @@ $('document').ready(function () {
   function getPosts() {
     // referencing current user object to grab unique id used to associate Posts with User(foreignKey)
     var retrievedObject = JSON.parse(sessionStorage.getItem('currentUser'));
-    var UserId = retrievedObject.id; 
-    $.get("/users/posts" + UserId).then(function(allPosts) {
+    var UserId = retrievedObject.id;
+    $.get("/users/posts" + UserId).then(function (allPosts) {
       // render all posts to page 
-    }); 
+    });
   }
-
 });
