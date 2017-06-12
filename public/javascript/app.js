@@ -81,7 +81,43 @@ $('document').ready(function () {
     }
   }
 
-  handleAuthentication();
+  function createUserPic(user) { 
+    
+    var picInfo = user.picture;
+    var imgDiv = $('<img>');
+    imgDiv.attr('src', picInfo);
+    $("#user-picture").append(imgDiv);
+  }
+
+  function statusUpdate(user) {
+    $('#status').removeClass('hide');
+    //animates text box
+    $('#textarea1').val('');
+    $('#textarea1').trigger(autoresize);
+    //on click to get status
+    $('#btn').on('click', function() {
+      //add to session storage?
+      console.log('status updated');
+      $('#status').addClass('hide');
+    });
+    Materialize.toast('Status Updated!', 4000);
+  }
+
+  function aboutMe(user) {
+    $('#aboutMe').removeClass('hide');
+    //animates text box
+    $('#textarea2').val('');
+    $('#textarea2').trigger(autoresize);
+    //on click to get status
+    $('#btn').on('click', function() {
+      //add to session storage?
+      console.log('status updated');
+      $('#aboutMe').addClass('hide');
+    });
+    Materialize.toast('About Me posted!', 4000);
+    
+  }
+ handleAuthentication();
 
   function handleAuthentication() {
     // wrap function around this 
@@ -121,7 +157,16 @@ $('document').ready(function () {
           var retrievedObject = JSON.parse(sessionStorage.getItem('currentUser'));
           console.log("retrievedObject ",  retrievedObject); 
           postUserDB(newUser);
-
+          console.log('hi!');
+          //activate page
+          $('div').removeClass('hide');
+          createUserPic(newUser);
+          statusUpdate(newUser);
+          aboutMe(newUer);
+          //carousel
+          $(document).ready(function() {
+            $('.carousel').carousel();
+          });
         });
       }
     });
