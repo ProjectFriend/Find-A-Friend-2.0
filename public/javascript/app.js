@@ -1,15 +1,6 @@
 "use strict";
 
-$('document').ready(function () {
-
-  // modularize code to operate on button click, not document.ready() 
-  // review what handleAuthentication does and try to keep initial error from appearing about token 
-
-
-  // updated user database to include facebook/google email for 
-  // node mailer? to show that the user logged in? 
-  // should we stick to only authenticating facebook to avoid 
-  // cross-over issues 
+$(document).ready(function () {
   var webAuth = new auth0.WebAuth({
     domain: "ejqassem.auth0.com",
     clientID: "kNpinf_XmKG9ExgzjJTuQrNN60TAoEOn",
@@ -19,33 +10,18 @@ $('document').ready(function () {
     scope: 'openid profile email'
   });
 
-  var loginBtn = $('#btn-login');
+  initHandlers();
+  handleAuthentication();
 
-  loginBtn.click(function (e) {
-    e.preventDefault();
-    webAuth.authorize();
-  });
+  function initHandlers() {
+    // buttons and event listeners
+    $('#btn-login').click(function (event) {
+      event.preventDefault();
+      webAuth.authorize();
+    });
 
-  var loginStatus = $('.container h4');
-  var loginView = $('#login-view');
-  var homeView = $('#home-view');
-
-  // buttons and event listeners
-  var homeViewBtn = $('#btn-home-view');
-  var loginBtn = $('#btn-login');
-  var logoutBtn = $('#btn-logout');
-
-  homeViewBtn.click(function () {
-    homeView.css('display', 'inline-block');
-    loginView.css('display', 'none');
-  });
-
-  loginBtn.click(function (e) {
-    e.preventDefault();
-    webAuth.authorize();
-  });
-
-  logoutBtn.click(logout);
+    $('#btn-logout').click(logout);
+  }
 
   function setSession(authResult) {
     // Set the time that the access token will expire at
@@ -57,14 +33,19 @@ $('document').ready(function () {
     localStorage.setItem('expires_at', expiresAt);
   }
 
+  // return to blank screen? 
+  // render a blank page 
   function logout() {
     // Remove tokens and expiry time from localStorage
     localStorage.removeItem('access_token');
     localStorage.removeItem('id_token');
     localStorage.removeItem('expires_at');
+    sessionStorage.removeItem('currentUser'); 
     displayButtons();
   }
 
+  // checks to verify user is logged in? Maybe do this before any 
+  // calls to the server 
   function isAuthenticated() {
     // Check whether the current time is past the
     // access token's expiry time
@@ -72,90 +53,158 @@ $('document').ready(function () {
     return new Date().getTime() < expiresAt;
   }
 
+  function displayButtons() {
+    if (isAuthenticated()) {
+      $('#btn-login').css('display', 'none');
+      $('#btn-logout').css('display', 'inline-block');
+      $("#login-status").text('You are logged in!');
+    } else {
+      $('#btn-login').css('display', 'inline-block');
+      $('#btn-logout').css('display', 'none');
+      $("#login-status").text('Please login to continue!.');
+    }
+  }
+
+<<<<<<< HEAD
+  function createUserPic(user) { 
+    
+    var picInfo = user.picture;
+    var imgDiv = $('<img>');
+    imgDiv.attr('src', picInfo);
+    $("#user-picture").append(imgDiv);
+  }
+
+  function statusUpdate(user) {
+    $('#status').removeClass('hide');
+    //animates text box
+    $('#textarea1').val('');
+    $('#textarea1').trigger(autoresize);
+    //on click to get status
+    $('#btn').on('click', function() {
+      //add to session storage?
+      console.log('status updated');
+      $('#status').addClass('hide');
+    });
+    Materialize.toast('Status Updated!', 4000);
+  }
+
+  function aboutMe(user) {
+    $('#aboutMe').removeClass('hide');
+    //animates text box
+    $('#textarea2').val('');
+    $('#textarea2').trigger(autoresize);
+    //on click to get status
+    $('#btn').on('click', function() {
+      //add to session storage?
+      console.log('status updated');
+      $('#aboutMe').addClass('hide');
+    });
+    Materialize.toast('About Me posted!', 4000);
+    
+  }
+ handleAuthentication();
+
+=======
+>>>>>>> 970d141fefbb546389da173990b243ec337616ee
   function handleAuthentication() {
-    webAuth.parseHash(function (err, authResult) {
-      if (authResult && authResult.accessToken && authResult.idToken) {
-        window.location.hash = '';
-        setSession(authResult);
-        loginBtn.css('display', 'none');
-        homeView.css('display', 'inline-block');
-      } else if (err) {
-        homeView.css('display', 'inline-block');
+    // wrap function around this 
+    webAuth.parseHash(window.location.hash, function (err, authResult) {
+      if (err) {
+        // amend message to screen telling user to login or re-login since their token expired!! 
         console.log(err);
         alert(
           'Error: ' + err.error + '. Check the console for further details.'
         );
+      } else if (authResult && authResult.accessToken && authResult.idToken) {
+
+        window.location.hash = '';
+        setSession(authResult);
+        $('#btn-login').css('display', 'none');
+        // toggle showing login/logout depending on if the user is authenticated or not
+        displayButtons();
+
+        webAuth.client.userInfo(authResult.accessToken, function (err, user) {
+          console.log(user);
+          var newUser = {
+            email: user.email,
+            name: user.name,
+            nickname: user.nickname,
+            picture: user.picture,
+            provider: user.sub,
+            last_login: user.updated_at,
+          }
+
+          // send recieved user Object to database after authentication via auth0 
+          postUserDB(newUser);
+<<<<<<< HEAD
+          console.log('hi!');
+          //activate page
+          $('div').removeClass('hide');
+          createUserPic(newUser);
+          statusUpdate(newUser);
+          aboutMe(newUer);
+          //carousel
+          $(document).ready(function() {
+            $('.carousel').carousel();
+          });
+=======
+
+          // renderUserProfile(newUser); 
+
+>>>>>>> 970d141fefbb546389da173990b243ec337616ee
+        });
       }
-      displayButtons();
+    });
+  } 
+
+  // function renderUserProfile(newUser) {
+  //   var userImage = $("<img>"); 
+  //   userImage.attr("src", newUser.picture); 
+  //   $("#user-picture").append(userImage); 
+  // }
+
+  function postUserDB(newUser) {
+
+    // all HTTP requests are authenticated before any query is sent to the server 
+    isAuthenticated();
+
+    $.post("/users/", newUser).then(function (dbUser) {
+
+      // Put the user object into session storage for future reference 
+      sessionStorage.setItem('currentUser', JSON.stringify(dbUser));
+      var retrievedObject = JSON.parse(sessionStorage.getItem('currentUser'));
+      console.log("retrieved Object ", retrievedObject);
+    });
+
+  }
+
+  function submitNewPost() {
+    // all HTTP requests are authenticated before any query is sent to the server 
+    isAuthenticated();
+
+    // referencing current user object to grab unique id used to associate Posts with User(foreignKey)
+    var retrievedObject = JSON.parse(sessionStorage.getItem('currentUser'));
+
+    // var postTitle = $("#title-post").val().trim(); 
+    // var postBody = $("#body-post").val().trim(); 
+    // new post to server must follow following guidelines: 
+    // newPost = {
+    //   title: postTitle, 
+    //   body: postBody, 
+    //   "UserId": retrievedObject.id
+    // }
+
+    $.post("/user/posts/", newPost).then(function (result) {
+      console.log(result);
     });
   }
 
-  function displayButtons() {
-    if (isAuthenticated()) {
-      loginBtn.css('display', 'none');
-      logoutBtn.css('display', 'inline-block');
-      loginStatus.text('You are logged in!');
-    } else {
-      loginBtn.css('display', 'inline-block');
-      logoutBtn.css('display', 'none');
-      loginStatus.text('You are not logged in! Please log in to continue.');
-    }
-  }
-  handleAuthentication();
-
-  webAuth.parseHash(window.location.hash, function (err, authResult) {
-    if (err) {
-      return console.log(err);
-    }
-    console.log(authResult);
-    // var id_token = authResult.idToken; 
-    webAuth.client.userInfo(authResult.accessToken, function (err, user) {
-      // This method will make a request to the /userinfo endpoint 
-      // and return the user object, which contains the user's information, 
-      // similar to the response below.
-      // console.log("user.user_id " , user.user_id);
-      // console.log("user_id ", user_id); 
-      console.log(user);
-      console.log(user.email);
-      var newUser = {
-        // id_token: id_token, 
-        email: user.email,
-        name: user.name,
-        nickname: user.nickname,
-        picture: user.picture,
-        provider: user.sub,
-        last_login: user.updated_at,
-      }
-
-      // // Put the object into storage
-      // sessionStorage.setItem('currentUser', JSON.stringify(newUser));
-
-      // // Retrieve the object from storage
-      // var retrievedObject = sessionStorage.getItem('currentUser');
-
-      // console.log('retrievedObject: ', JSON.parse(retrievedObject));
-
-
-
-      // store user in session/local storage for future post requests? 
-      //composite score
-      //updating their about me
-      //request to database to compare user scores to others  
-      //connecting with other users
-      $.post("/users/", newUser).then(function (dbUser) {
-
-        // need to store user data in database
-        // grab user photo to post on page 
-        // associate blog posts with user data 
-        // maybe pick only one social media site to authorize??? 
-        // render web-page here using user information 
-        // why exactly should we have multiple tables? 
-        // think of ways to split up database? Ask ryo/leo for input
-        console.log("sent via the server", dbUser);
-        console.log("successfully sent user info to server!");
-      });
-
+  function getPosts() {
+    // referencing current user object to grab unique id used to associate Posts with User(foreignKey)
+    var retrievedObject = JSON.parse(sessionStorage.getItem('currentUser'));
+    var UserId = retrievedObject.id;
+    $.get("/users/posts" + UserId).then(function (allPosts) {
+      // render all posts to page 
     });
-  });
-
+  }
 });

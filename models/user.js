@@ -1,10 +1,6 @@
 module.exports = function(sequelize, DataTypes) {
  
     var User = sequelize.define('User', {
-        // id_token: {
-        //   type: DataTypes.TEXT, 
-        // }, 
-
         email: {
           type: DataTypes.STRING, 
         },
@@ -21,11 +17,6 @@ module.exports = function(sequelize, DataTypes) {
         picture: {
             type: DataTypes.STRING,
         },
-
-         provider: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
  
         last_login: {
             type: DataTypes.DATE
@@ -36,10 +27,18 @@ module.exports = function(sequelize, DataTypes) {
         },
  
         status: {
-            type: DataTypes.ENUM('active', 'inactive'),
-            defaultValue: 'active'
+            type: DataTypes.STRING, 
+            defaultValue: "friend"
         }
  
+    }, {
+        classMethods: {
+            associate: function(models) {
+                User.hasMany(models.Posts, {
+                     onDelete: "cascade"
+                }); 
+            }
+        }
     });
  
     return User;
