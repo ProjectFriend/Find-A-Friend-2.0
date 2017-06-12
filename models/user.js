@@ -27,8 +27,8 @@ module.exports = function(sequelize, DataTypes) {
         },
  
         status: {
-            type: DataTypes.ENUM('active', 'inactive'),
-            defaultValue: 'active'
+            type: DataTypes.STRING, 
+            defaultValue: "friend"
         }
  
     }, {
@@ -44,6 +44,3 @@ module.exports = function(sequelize, DataTypes) {
     return User;
  
 }
-
-// implement nodemailer to recognize when a user has signed in using 
-// email sent back via auth0 
