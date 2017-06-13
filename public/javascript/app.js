@@ -10,17 +10,35 @@ $(document).ready(function () {
     scope: 'openid profile email'
   });
 
-  initHandlers();
+  hideBeforeLoginScreen();
   handleAuthentication();
+  initHandlers();
+
+  function hideBeforeLoginScreen() {
+    $("#after-login-screen").hide();
+    $("#user-about-me").hide();
+    $("#user-posts").hide();
+    $("#survey-btns-div").hide();
+  }
+
+  function showAfterLoginScreen() {
+    $("#welcome-screen").hide();
+    $("#after-login-screen").show();
+    $("#user-about-me").show();
+    $("#user-posts").show();
+    $("#survey-btns-div").show();
+  }
 
   function initHandlers() {
     // buttons and event listeners
-    $('#btn-login').click(function (event) {
+    $('.btn-login').click(function (event) {
       event.preventDefault();
       webAuth.authorize();
     });
-
-    $('#btn-logout').click(logout);
+    $('.btn-logout').click(logout);
+    $("#submit-new-post").on("click", submitNewPost);
+    $("#submit-new-about").on("click", submitAboutUser);
+    $(".button-collapse").sideNav();
   }
 
   function setSession(authResult) {
@@ -40,7 +58,6 @@ $(document).ready(function () {
     localStorage.removeItem('access_token');
     localStorage.removeItem('id_token');
     localStorage.removeItem('expires_at');
-    sessionStorage.removeItem('currentUser'); 
     displayButtons();
   }
 
@@ -55,13 +72,13 @@ $(document).ready(function () {
 
   function displayButtons() {
     if (isAuthenticated()) {
-      $('#btn-login').css('display', 'none');
-      $('#btn-logout').css('display', 'inline-block');
+      $('.btn-login').css('display', 'none');
+      $('.btn-logout').css('display', 'inline-block');
       $("#login-status").text('You are logged in!');
     } else {
-      $('#btn-login').css('display', 'inline-block');
-      $('#btn-logout').css('display', 'none');
-      $("#login-status").text('Please login to continue!.');
+      $('.btn-login').css('display', 'inline-block');
+      $('.btn-logout').css('display', 'none');
+      $("#login-status").text('Please login to continue!');
     }
   }
 
@@ -78,7 +95,7 @@ $(document).ready(function () {
 
         window.location.hash = '';
         setSession(authResult);
-        $('#btn-login').css('display', 'none');
+        $('.btn-login').css('display', 'none');
         // toggle showing login/logout depending on if the user is authenticated or not
         displayButtons();
 
@@ -89,25 +106,51 @@ $(document).ready(function () {
             name: user.name,
             nickname: user.nickname,
             picture: user.picture,
-            provider: user.sub,
             last_login: user.updated_at,
           }
 
           // send recieved user Object to database after authentication via auth0 
           postUserDB(newUser);
-
-          // renderUserProfile(newUser); 
-
         });
       }
     });
-  } 
+  }
 
-  // function renderUserProfile(newUser) {
-  //   var userImage = $("<img>"); 
-  //   userImage.attr("src", newUser.picture); 
-  //   $("#user-picture").append(userImage); 
-  // }
+  function renderUserProfile(userImage) {
+    showAfterLoginScreen();
+    // runs AJAX get request to get all of the logged in user's posts 
+    getPosts(function (userPosts) {
+      for (var i = 0; i < userPosts.length; i++) {
+        var currentPost = JSON.parse(JSON.stringify(userPosts[i]));
+
+        var newPost = $("<li>");
+        newPost.attr("class", "flow-text collection-item");
+        var newPostBody = currentPost["Posts.body"];
+        newPost.append(newPostBody);
+        $("#user-posts-here").append(newPost);
+      }
+      var singlePost = JSON.parse(JSON.stringify(userPosts[0]));
+      var aboutUser = singlePost["about_user"];
+      console.log(aboutUser);
+      $('#about-user').val(aboutUser);
+      $('#about-user').trigger('autoresize');
+      Materialize.updateTextFields();
+
+      var userName = $("<h5>"); 
+      userName.attr("class", "current-user-name"); 
+      userName.append(singlePost["name"]); 
+       $("#user-name").append(userName); 
+    });
+
+
+    var profileImage = $("<img>");
+    profileImage.attr({
+      "src": userImage,
+      "class": "responsive-img materialboxed"
+    });
+    $("#user-image").append(profileImage);
+
+  }
 
   function postUserDB(newUser) {
 
@@ -120,8 +163,11 @@ $(document).ready(function () {
       sessionStorage.setItem('currentUser', JSON.stringify(dbUser));
       var retrievedObject = JSON.parse(sessionStorage.getItem('currentUser'));
       console.log("retrieved Object ", retrievedObject);
+      console.log(retrievedObject.picture);
+      var userImage = retrievedObject.picture;
+      console.log(userImage);
+      renderUserProfile(userImage);
     });
-
   }
 
   function submitNewPost() {
@@ -130,27 +176,67 @@ $(document).ready(function () {
 
     // referencing current user object to grab unique id used to associate Posts with User(foreignKey)
     var retrievedObject = JSON.parse(sessionStorage.getItem('currentUser'));
-
-    // var postTitle = $("#title-post").val().trim(); 
-    // var postBody = $("#body-post").val().trim(); 
+    console.log(retrievedObject.id);
+    console.log("Post submitted!");
+    var postBody = $("#post-body").val().trim();
+    // empty out form after submission 
+    $("#post-body").val(""); 
     // new post to server must follow following guidelines: 
-    // newPost = {
-    //   title: postTitle, 
-    //   body: postBody, 
-    //   "UserId": retrievedObject.id
-    // }
+    var newPost = {
+      body: postBody,
+      UserId: retrievedObject.id
+    }
 
-    $.post("/user/posts/", newPost).then(function (result) {
+    // attaches current status next to user image 
+    $("#current-status-text").text(""); 
+    var newPostText = postBody; 
+    $("#current-status-text").append(newPostText); 
+
+    $.post("/users/posts/", newPost).then(function (result) {
       console.log(result);
     });
   }
 
-  function getPosts() {
+  function getPosts(callback) {
     // referencing current user object to grab unique id used to associate Posts with User(foreignKey)
     var retrievedObject = JSON.parse(sessionStorage.getItem('currentUser'));
     var UserId = retrievedObject.id;
-    $.get("/users/posts" + UserId).then(function (allPosts) {
-      // render all posts to page 
+    var userPosts;
+    $.ajax({
+      url: "/users/posts/" + UserId,
+      method: "GET"
+    }).done(function (result) {
+      userPosts = result;
+      return callback(userPosts);
     });
   }
+
+  function submitAboutUser() {
+    var retrievedObject = JSON.parse(sessionStorage.getItem('currentUser'));
+    var userName = retrievedObject.name;
+    var aboutUser = $("#about-user").val().trim();
+    console.log(aboutUser);
+    var updateUser = {
+      aboutUser: aboutUser,
+      name: userName
+    }
+    $.ajax({
+      url: "/users/aboutuser/",
+      method: "PUT",
+      data: updateUser
+    }).done(function (result) {
+      console.log(result);
+    });
+  }
+
+
+
+  function renderQuestionsPage() {
+
+  }
+
+  function renderMatchesPage() {
+
+  }
+
 });

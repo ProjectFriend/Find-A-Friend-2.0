@@ -4,76 +4,155 @@
 <head>
 
   <title> Find-a-Friend-2.0 </title>
-  <!-- Latest compiled and minified CSS -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-    crossorigin="anonymous">
-  <!-- Optional theme -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
-    crossorigin="anonymous">
-  <!--custom CSS-->
-  <!--<link rel="stylesheet" href="./css/style.css">-->
-  <!--jQuery CDN -->
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="./css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!--jQuery CDN-->
   <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
     crossorigin="anonymous"></script>
-  <!-- Latest compiled and minified JavaScript -->
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-    crossorigin="anonymous"></script>
-  <script src="https://cdn.auth0.com/js/auth0/8.7/auth0.min.js"></script>
-
-  <!-- Compiled and minified CSS for Materialize-->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
-  <!--Materialize Icons CDN-->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <!--custom CSS-->
-  <!--<link rel="stylesheet" href="./css/style.css">-->
-  <title>Breaking out the Friend zone</title>
 </head>
 
-<body class="blue-grey lighten-4">
-  <h1 class="blue-grey lighten-4" class="light-italic">Breaking out the Friend zone
-  </h1>
+<body>
 
   <nav>
-    <div class="nav-wrapper">
-      <a href="#" class="brand-logo">Welcome Habibi</a>
+    <div class="nav-wrapper blue-grey darken-4">
+      <a class="brand-logo" href="#"><img id="logo" alt="habbibi-logo" src="./images/heart-image.png"> Habibi </a>
+      <a href="#" data-activates="mobile" class="button-collapse"><i class="material-icons">menu</i></a>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
-        <li><a href="#AboutMe">About Me<i class="material-icons right">perm_identity</i></a></li>
-        <li><a href="#Connect">Connect<i class="material-icons right">perm_phone_msg</i></a></li>
-        <li><a href="#Map">Map<i class="material-icons right">language</i></a></li>
-        <li><a href="#FriendZone">Friend Zone<i class="material-icons right">perm_contact_calendar</i></a></li>
-        <li><button id="btn-login" class="btn btn-primary btn-margin"> Log In</button></li>
-        <li><button id="btn-logout" class="btn btn-primary btn-margin"> Log Out</button></li>
+        <!--<li><a class="waves-effect survey-btns love-survey"> Love </a></li>
+        <li><a class="waves-effect survey-btns friend-survey"> Friend </a></li>
+        <li><a class="waves-effect survey-btns both-survey"> Both </a></li>-->
+        <li><a class="waves-effect btn-login"> Login </a></li>
+        <li><a class="waves-effect btn-logout"> Logout </a></li>
+      </ul>
+      <ul class="side-nav" id="mobile">
+        <!--<li><a class="waves-effect survey-btns love-survey"> Heart symbol </a></li>
+        <li><a class="swaves-effect urvey-btns friend-survey"> Friend Symbol </a></li>
+        <li><a class="waves-effect survey-btns both-survey"> Both </a></li>-->
+        <li><a class="waves-effect btn-login"> Login </a></li>
+        <li><a class="waves-effect btn-logout"> Logout </a></li>
       </ul>
     </div>
   </nav>
-  <div class="row">
-    <div class="col s6">Habibi Information</div>
+
+  <!--<div class="container">
     <div class="row">
-      <div class="col s12 m7">
-        <div class="card">
-          <div class="card-image" id="user-picture">
+      <div class="col push-s9 s3">
+        <h2 class="flow-text right" id="login-status"></h2>
+      </div>
+    </div>-->
+    <div class="row">
+      <div class="col s12" id="wrapper">
+
+        <section id="welcome-screen">
+          <h1 class="center-align" id="welcome-header"> Welcome to Habibi! </h1>
+          <h2 class="center-align" id="welcome-subheader"> You're never too busy to meet someone new</h2>
+          <a id="get-started" class="waves-effect btn-login btn pulse"> Get Started! </a>
+          <h3 id="instructions"> Press get started to start matching today! :) </h3>
+        </section>
+
+        <section id="after-login-screen">
+          <ul id="tabs" class="tabs">
+            <li class="tab col s3"><a href="#profile-tab">Profile</a></li>
+            <li class="tab col s3"><a href="#questions-tab">Questions</a></li>
+             <li class="tab col s3"><a href="#matches-tab">Matches</a></li>
+          </ul>
+
+          <div id="profile-tab" class="col s12" id="main-panel">
+              <div class="card-panel">
+                <div class="row">
+                  <div class="col s6 m6 l6">
+                    <div class="row">
+                      <div class="col s4" id="user-image">
+
+                      </div>
+                      <div class="col s8" id="current-user-info">
+                        <div id="user-name">
+                          <!--attach current user here -->
+                        </div>
+                        <div class="row">
+                          <div class="col s12" class="current-status">
+                            <h5 class="current-status-title">Current status: <span id="current-status-text"></span></h5>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="s10 m10 l10">
+                        <div id="user-about-me">
+                          <div class="row">
+                            <form class="col s12">
+                              <div class="row">
+                                <div class="input-field col s11">
+                                  <textarea id="about-user" class="validate materialize-textarea" data-length="60" type="text"></textarea>
+                                  <label for="about-user" class="active"> About Me: </label>
+                                </div>
+                              </div>
+                              <button id="submit-new-about" class="btn waves-effect waves-light" type="button" name="action">Submit<i class="material-icons right">send</i></button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                  <div class="col s6 m6 l6">
+                    <div id="user-posts">
+                      <div class="row">
+                        <div class="row card-panel">
+                          <form class="col s12">
+                            <h4 id="status-title"> What's on your mind? </h4>
+                            <div class="input-field col s11">
+                              <input id="post-body" type="text" class="validate">
+                              <label for="post-body"> (#body): </label>
+                            </div>
+                            <button id="submit-new-post" class="btn waves-effect waves-light" type="button" name="action">Submit<i class="material-icons right">send</i></button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+
+                    <div class="col s12 m12 l12">
+                      <div class="row">
+                        <div class="col s12">
+                          <p>PAST POSTS</p>
+                          <ul class="collection" id="user-posts-here">
+                            <!--append user posts here-->
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
             
-            <span class="card-title">***</span>
           </div>
-          <div class="card-content">
-            <p>***</p>
+          <div id="questions-tab" class="col s12 orange">
+
+              Questions Here: 
+
           </div>
-        </div>
+          <div id="matches-tab" class="col s12 orange">Matches:</div>
+        </section>
       </div>
     </div>
-
-
-    <div class="col s6">Match</div>
   </div>
 
-  <div class="row">
-    <div class="col s6">Blog</div>
-    <div class="col s6">Opposite attraction</div>
-  </div>
 
-  </main>
+
+  <!--auth0 stable CDN-->
+  <script src="https://cdn.auth0.com/js/auth0/8.7/auth0.min.js"></script>
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
+  <!--custom JS-->
   <script src="./javascript/app.js"></script>
 </body>
 
 </html>
-</div>
