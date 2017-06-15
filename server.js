@@ -29,11 +29,11 @@ require("./routes/apiRoutes")(app);
 
 // Syncing our sequelize models and then starting our express app
 db.sequelize.sync().then(function () {
-  app.listen(PORT, function () {
+  app.listen(PORT, function() {
 
     console.log("App listening on PORT " + PORT);
 
-    db.User.findAll({}).then(function (friends) {
+    db.User.findAll({}).then(function(friends) {
       if (!friends.length) {
         addFriend(seeds[0], 0);
       }
@@ -44,7 +44,7 @@ db.sequelize.sync().then(function () {
         return;
       }
 
-      db.User.create(friend).then(function (newFriend) {
+      db.User.create(friend).then(function(newFriend) {
         // logic to make score object matching score table
         var score = {};
         console.log("newFriend ", newFriend); 
@@ -55,7 +55,7 @@ db.sequelize.sync().then(function () {
         var id = newFriend.id; 
         score.UserId = id; 
         
-        db.Scores.create(score).then(function (newScore) {
+        db.Scores.create(score).then(function(newScore) {
           console.log("newScore ", newScore); 
 
             console.log("i before" + i); 

@@ -114,9 +114,9 @@ module.exports = function (app) {
   app.post("/users/friends", function (req, res) {
     // example post request from questionaire: 
     //  {name: "Eyad", scores: [1,3,2,1,2,3,4,3,2,1], UserId: 1}
-    var results = req.body; 
+    var results = req.body;
     var newUser = {
-      name: results['name'],
+      name: results.name,
       scores: results.scores,
       UserId: results.UserId
     };
@@ -128,49 +128,51 @@ module.exports = function (app) {
       raw: true
     }).then(function (user) {
       // console.log(user);
-      var friendScores = user.map(function(friend) {
-        var returnArr = []; 
-        var x = 0; 
-        for ( var i = 0; i < 10; i++) {
-          returnArr.push(friend["Question" + (i + 1)]); 
-          console.log("friend ", friend); 
+      var friendScores = user.map(function (friend) {
+        var returnArr = [];
+        var x = 0;
+        for (var i = 0; i < 10; i++) {
+          returnArr.push(friend["Question" + (i + 1)]);
+          // console.log("friend ", friend);
         }
         // Adding userId to the 10th index to allow for matching via querying the DB 
         // returnArr.push("This is the UserId: ", friend.UserId); 
-        returnArr.push(friend.UserId); 
-        return returnArr; 
-      }); 
+        returnArr.push(friend.UserId);
+        return returnArr;
+      });
 
-      var newUserScores = newUser.scores; 
+      var newUserScores = newUser.scores;
       var config = {
-        objects: friendScores, 
+        objects: friendScores,
         number: 1
-      }; 
+      };
 
-      var nearestNeightbor = require("nearestneighbour")(config); 
-      var resultsList = nearestNeightbor.nearest(newUserScores); 
-      console.log("resultsList " , resultsList); 
+      var nearestNeightbor = require("nearestneighbour")(config);
+      var resultsList = nearestNeightbor.nearest(newUserScores);
+      // console.log("resultsList ", resultsList);
 
-      var matchedUser= resultsList[0][10]; 
-      console.log("matchedUserId " + matchedUser); 
+      var matchedUser = resultsList[0][10];
+      console.log("matchedUserId " + matchedUser);
       // use UserId to join matches with particular user 
       db.User.findAll({
         where: {
           id: matchedUser
         }
-      }).then(function(bestUser) {
+      }).then(function (bestUser) {
+        
         var persistMatch = {
-          name: bestUser[0].name, 
-          email: bestUser[0].email, 
-          picture: bestUser[0].picture, 
-          about: bestUser[0].about, 
-          UserId: newUser.UserId 
+          name: bestUser[0].name,
+          email: bestUser[0].email,
+          picture: bestUser[0].picture,
+          about: bestUser[0].about,
+          UserId: newUser.UserId
         }
-        db.Matches.create(persistMatch).then(function(results) {
-          return res.json(results); 
-        }); 
-        console.log("best User ", bestUser); 
-      }); 
+
+        db.Matches.create(persistMatch).then(function (results) {
+          return res.json(results);
+        });
+        console.log("best User ", bestUser);
+      });
 
     });
 
