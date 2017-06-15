@@ -38,7 +38,7 @@ $(document).ready(function () {
     $('.btn-login').click(function (event) {
       event.preventDefault();
       webAuth.authorize();
-    });
+    }); 
     $('.btn-logout').click(logout);
     $("#submit-new-post").on("click", submitNewPost);
     $("#submit-new-about").on("click", submitAboutUser);
@@ -235,7 +235,6 @@ $(document).ready(function () {
       console.log(result);
     });
   }
-
 
 
   function renderQuestionsPage() {

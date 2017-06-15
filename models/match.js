@@ -1,16 +1,24 @@
 var db = require("../models");
 
 module.exports = function (sequelize, DataTypes) {
-  var Posts = sequelize.define("Posts", {
-    body: {
+  var Matches = sequelize.define("Matches", {
+    name: {
       type: DataTypes.TEXT,
       allowNull: false,
-      len: [1]
+    },
+    email: {
+      type: DataTypes.STRING, 
+    }, 
+    picture: {
+      type: DataTypes.STRING
+    }, 
+    about: {
+      type: DataTypes.TEXT
     }
   }, {
     classMethods: {
       associate: function (models) {
-        Posts.belongsTo(models.User, {
+        Matches.belongsTo(models.User, {
           foreignKey: {
             allowNull: false
           }
@@ -19,6 +27,6 @@ module.exports = function (sequelize, DataTypes) {
     }
   });
 
-  return Posts;
+  return Matches;
 
 }
