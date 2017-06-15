@@ -23,127 +23,121 @@
       <a class="brand-logo" href="#"><img id="logo" alt="habbibi-logo" src="./images/heart-image.png"> Habibi </a>
       <a href="#" data-activates="mobile" class="button-collapse"><i class="material-icons">menu</i></a>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
-        <!--<li><a class="waves-effect survey-btns love-survey"> Love </a></li>
-        <li><a class="waves-effect survey-btns friend-survey"> Friend </a></li>
-        <li><a class="waves-effect survey-btns both-survey"> Both </a></li>-->
         <li><a class="waves-effect btn-login"> Login </a></li>
         <li><a class="waves-effect btn-logout"> Logout </a></li>
       </ul>
       <ul class="side-nav" id="mobile">
-        <!--<li><a class="waves-effect survey-btns love-survey"> Heart symbol </a></li>
-        <li><a class="swaves-effect urvey-btns friend-survey"> Friend Symbol </a></li>
-        <li><a class="waves-effect survey-btns both-survey"> Both </a></li>-->
         <li><a class="waves-effect btn-login"> Login </a></li>
         <li><a class="waves-effect btn-logout"> Logout </a></li>
       </ul>
     </div>
   </nav>
 
-  <!--<div class="container">
-    <div class="row">
-      <div class="col push-s9 s3">
-        <h2 class="flow-text right" id="login-status"></h2>
-      </div>
-    </div>-->
-    <div class="row">
-      <div class="col s12" id="wrapper">
 
-        <section id="welcome-screen">
-          <h1 class="center-align" id="welcome-header"> Welcome to Habibi! </h1>
-          <h2 class="center-align" id="welcome-subheader"> You're never too busy to meet someone new</h2>
-          <a id="get-started" class="waves-effect btn-login btn pulse"> Get Started! </a>
-          <h3 id="instructions"> Press get started to start matching today! :) </h3>
-        </section>
+  <div class="row">
+    <div class="col s12" id="wrapper">
 
-        <section id="after-login-screen">
-          <ul id="tabs" class="tabs">
-            <li class="tab col s3"><a href="#profile-tab">Profile</a></li>
-            <li class="tab col s3"><a href="#questions-tab">Questions</a></li>
-             <li class="tab col s3"><a href="#matches-tab">Matches</a></li>
-          </ul>
+      <section id="welcome-screen">
+        <h1 class="center-align" id="welcome-header"> Welcome to Habibi! </h1>
+        <h2 class="center-align" id="welcome-subheader"> You're never too busy to meet someone new</h2>
+        <a id="get-started" class="waves-effect btn-login btn pulse"> Get Started! </a>
+        <h3 id="instructions"> Press get started to start matching today! :) </h3>
+      </section>
 
-          <div id="profile-tab" class="col s12" id="main-panel">
-              <div class="card-panel">
+      <section id="after-login-screen">
+        <ul id="tabs" class="tabs">
+          <li class="tab col s3"><a href="#profile-tab">Profile</a></li>
+          <li class="tab col s3"><a href="#questions-tab">Questions</a></li>
+          <li class="tab col s3"><a href="#matches-tab">Matches</a></li>
+        </ul>
+
+        <div id="profile-tab" class="col s12" id="main-panel">
+          <div class="card-panel">
+            <div class="row">
+              <div class="col s6 m6 l6">
                 <div class="row">
-                  <div class="col s6 m6 l6">
-                    <div class="row">
-                      <div class="col s4" id="user-image">
+                  <div class="col s4" id="user-image">
 
-                      </div>
-                      <div class="col s8" id="current-user-info">
-                        <div id="user-name">
-                          <!--attach current user here -->
-                        </div>
-                        <div class="row">
-                          <div class="col s12" class="current-status">
-                            <h5 class="current-status-title">Current status: <span id="current-status-text"></span></h5>
-                          </div>
-                        </div>
-                      </div>
+                  </div>
+                  <div class="col s8" id="current-user-info">
+                    <div id="user-name">
+                      <!--attach current user here -->
                     </div>
                     <div class="row">
-                      <div class="s10 m10 l10">
-                        <div id="user-about-me">
+                      <div class="col s12" class="current-status">
+                        <h5 class="current-status-title">Current status: <span id="current-status-text"></span></h5>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="s10 m10 l10">
+                    <div id="user-about-me">
+                      <div class="row">
+                        <form class="col s12">
                           <div class="row">
-                            <form class="col s12">
-                              <div class="row">
-                                <div class="input-field col s11">
-                                  <textarea id="about-user" class="validate materialize-textarea" data-length="60" type="text"></textarea>
-                                  <label for="about-user" class="active"> About Me: </label>
-                                </div>
-                              </div>
-                              <button id="submit-new-about" class="btn waves-effect waves-light" type="button" name="action">Submit<i class="material-icons right">send</i></button>
-                            </form>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                  </div>
-                  <div class="col s6 m6 l6">
-                    <div id="user-posts">
-                      <div class="row">
-                        <div class="row card-panel">
-                          <form class="col s12">
-                            <h4 id="status-title"> What's on your mind? </h4>
                             <div class="input-field col s11">
-                              <input id="post-body" type="text" class="validate">
-                              <label for="post-body"> (#body): </label>
+                              <textarea id="about-user" class="validate materialize-textarea" data-length="60" type="text"></textarea>
+                              <label for="about-user" class="active"> About Me: </label>
                             </div>
-                            <button id="submit-new-post" class="btn waves-effect waves-light" type="button" name="action">Submit<i class="material-icons right">send</i></button>
-                          </form>
-                        </div>
+                          </div>
+                          <button id="submit-new-about" class="btn waves-effect waves-light" type="button" name="action">Submit<i class="material-icons right">send</i></button>
+                        </form>
                       </div>
                     </div>
-                  </div>
-                  <div class="row">
-
-                    <div class="col s12 m12 l12">
-                      <div class="row">
-                        <div class="col s12">
-                          <p>PAST POSTS</p>
-                          <ul class="collection" id="user-posts-here">
-                            <!--append user posts here-->
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-
                   </div>
                 </div>
 
               </div>
-            
-          </div>
-          <div id="questions-tab" class="col s12 orange">
+              <div class="col s6 m6 l6">
+                <div id="user-posts">
+                  <div class="row">
+                    <div class="row card-panel">
+                      <form class="col s12">
+                        <h4 id="status-title"> What's on your mind? </h4>
+                        <div class="input-field col s11">
+                          <input id="post-body" type="text" class="validate">
+                          <label for="post-body"> (#body): </label>
+                        </div>
+                        <button id="submit-new-post" class="btn waves-effect waves-light" type="button" name="action">Submit<i class="material-icons right">send</i></button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
 
-              Questions Here: 
+                <div class="col s12 m12 l12">
+                  <div class="row">
+                    <div class="col s12">
+                      <p>PAST POSTS</p>
+                      <ul class="collection" id="user-posts-here">
+                        <!--append user posts here-->
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
 
           </div>
-          <div id="matches-tab" class="col s12 orange">Matches:</div>
-        </section>
-      </div>
+
+        </div>
+        <div id="questions-tab" class="col s12 orange">
+
+          Questions Here:
+
+        </div>
+        <div id="matches-tab" class="col s12 orange">
+
+          Matches Here:
+
+        </div>
+
+      </section>
     </div>
+  </div>
   </div>
 
 

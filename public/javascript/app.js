@@ -287,12 +287,12 @@ $(document).ready(function () {
 
 
 
-  function renderQuestionsPage() {
+  // function renderQuestionsPage() {
 
-  }
+  // }
 
-  function renderMatchesPage() {
+  // function renderMatchesPage() {
 
-  }
+  // }
 
 });
