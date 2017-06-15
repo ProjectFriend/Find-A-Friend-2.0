@@ -19,14 +19,18 @@ $(document).ready(function () {
     $("#user-about-me").hide();
     $("#user-posts").hide();
     $("#survey-btns-div").hide();
+    $(".page-footer").hide();
   }
 
   function showAfterLoginScreen() {
     $("#welcome-screen").hide();
+    $('html').css('background-image', 'none').css('background-color', '#29323c');
     $("#after-login-screen").show();
     $("#user-about-me").show();
     $("#user-posts").show();
     $("#survey-btns-div").show();
+    $(".page-footer").show();
+    
   }
 
   function initHandlers() {
@@ -83,45 +87,6 @@ $(document).ready(function () {
   }
 
 
-//   function createUserPic(user) { 
-    
-//     var picInfo = user.picture;
-//     var imgDiv = $('<img>');
-//     imgDiv.attr('src', picInfo);
-//     $("#user-picture").append(imgDiv);
-//   }
-
-//   function statusUpdate(user) {
-//     $('#status').removeClass('hide');
-//     //animates text box
-//     $('#textarea1').val('');
-//     $('#textarea1').trigger(autoresize);
-//     //on click to get status
-//     $('#btn').on('click', function() {
-//       //add to session storage?
-//       console.log('status updated');
-//       $('#status').addClass('hide');
-//     });
-//     Materialize.toast('Status Updated!', 4000);
-//   }
-
-//   function aboutMe(user) {
-//     $('#aboutMe').removeClass('hide');
-//     //animates text box
-//     $('#textarea2').val('');
-//     $('#textarea2').trigger(autoresize);
-//     //on click to get status
-//     $('#btn').on('click', function() {
-//       //add to session storage?
-//       console.log('status updated');
-//       $('#aboutMe').addClass('hide');
-//     });
-//     Materialize.toast('About Me posted!', 4000);
-    
-//   }
-//  handleAuthentication();
-
-
   function handleAuthentication() {
     // wrap function around this 
     webAuth.parseHash(window.location.hash, function (err, authResult) {
@@ -152,26 +117,12 @@ $(document).ready(function () {
           // send recieved user Object to database after authentication via auth0 
           postUserDB(newUser);
 
-//           console.log('hi!');
-//           //activate page
-//           $('div').removeClass('hide');
-//           createUserPic(newUser);
-//           statusUpdate(newUser);
-//           aboutMe(newUer);
-//           //carousel
-//           $(document).ready(function() {
-//             $('.carousel').carousel();
-//           });
-
-
-          // renderUserProfile(newUser); 
-
-
         });
       }
     });
   }
 
+  // renderUserProfile(newUser); 
   function renderUserProfile(userImage) {
     showAfterLoginScreen();
     // runs AJAX get request to get all of the logged in user's posts 
@@ -193,7 +144,7 @@ $(document).ready(function () {
       Materialize.updateTextFields();
 
       var userName = $("<h5>"); 
-      userName.attr("class", "current-user-name"); 
+      userName.attr("class", "current-user-name "); 
       userName.append(singlePost["name"]); 
        $("#user-name").append(userName); 
     });
@@ -202,7 +153,7 @@ $(document).ready(function () {
     var profileImage = $("<img>");
     profileImage.attr({
       "src": userImage,
-      "class": "responsive-img materialboxed"
+      "class": "responsive-img materialboxed center"
     });
     $("#user-image").append(profileImage);
 
@@ -284,6 +235,19 @@ $(document).ready(function () {
       console.log(result);
     });
   }
-  
+
+
+  function renderQuestionsPage() {
+
+  }
+  //create a function here to dynamically fill the carousel with clickable matches
+  //function renderMatchesPage() {
+     
+      $('.carousel').carousel({
+        padding:200
+      });
+      
+    
+ // }
 
 });
