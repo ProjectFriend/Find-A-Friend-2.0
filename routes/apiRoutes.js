@@ -148,8 +148,10 @@ module.exports = function (app) {
 
       var nearestNeightbor = require("nearestneighbour")(config);
       var resultsList = nearestNeightbor.nearest(newUserScores);
-
-      var matchedUser = resultsList[0][10];
+      console.log("===============================");
+      console.log("resultsList: " , resultsList)
+      console.log("===============================");
+      var matchedUser1 = resultsList[0][10];
       var matchedUser2 = resultsList[1][10];
       var matchedUser3 = resultsList[2][10];
   
@@ -157,7 +159,7 @@ module.exports = function (app) {
       db.User.findAll({
         where: {
           id: {
-            in: [matchedUser, matchedUser2, matchedUser3],
+            in: [matchedUser1, matchedUser2, matchedUser3],
           }
         }
       }).then(function (bestUser) {
