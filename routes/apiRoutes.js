@@ -114,10 +114,11 @@ module.exports = function (app) {
   app.post("/users/friends", function (req, res) {
     // example post request from questionaire: 
     //  {name: "Eyad", scores: [1,3,2,1,2,3,4,3,2,1], UserId: 1}
+    
     var results = req.body;
     var newUser = {
       name: results.name,
-      scores: results.scores,
+      scores: parseInt(results.scores),
       UserId: results.UserId
     };
 

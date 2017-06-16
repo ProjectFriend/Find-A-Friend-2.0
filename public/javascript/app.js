@@ -42,10 +42,12 @@ $(document).ready(function () {
     $("#submit-new-post").on("click", submitNewPost);
     $("#submit-new-about").on("click", submitAboutUser);
     $(".button-collapse").sideNav();
-    $('.carousel').carousel({
-      padding: 200
-    });
     $("#submitbutton").on("click", submitQuestionaire);
+    $(".tabs").tabs({
+      onShow: function (tab) {
+        $(".carousel").carousel();
+      }
+    })
   }
 
   function setSession(authResult) {
