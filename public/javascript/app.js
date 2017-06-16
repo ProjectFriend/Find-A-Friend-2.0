@@ -37,14 +37,15 @@ $(document).ready(function () {
     $('.btn-login').click(function (event) {
       event.preventDefault();
       webAuth.authorize();
-    }); 
+    });
     $('.btn-logout').click(logout);
     $("#submit-new-post").on("click", submitNewPost);
     $("#submit-new-about").on("click", submitAboutUser);
     $(".button-collapse").sideNav();
-     $('.carousel').carousel({
-        padding:200
-      });
+    $('.carousel').carousel({
+      padding: 200
+    });
+    $("#submitbutton").on("click", submitQuestionaire);
   }
 
   function setSession(authResult) {
@@ -145,10 +146,10 @@ $(document).ready(function () {
       $('#about-user').trigger('autoresize');
       Materialize.updateTextFields();
 
-      var userName = $("<h5>"); 
-      userName.attr("class", "current-user-name "); 
-      userName.append(singlePost["name"]); 
-       $("#user-name").append(userName); 
+      var userName = $("<h5>");
+      userName.attr("class", "current-user-name ");
+      userName.append(singlePost["name"]);
+      $("#user-name").append(userName);
     });
 
 
@@ -189,7 +190,7 @@ $(document).ready(function () {
     console.log("Post submitted!");
     var postBody = $("#post-body").val().trim();
     // empty out form after submission 
-    $("#post-body").val(""); 
+    $("#post-body").val("");
     // new post to server must follow following guidelines: 
     var newPost = {
       body: postBody,
@@ -197,9 +198,9 @@ $(document).ready(function () {
     }
 
     // attaches current status next to user image 
-    $("#current-status-text").text(""); 
-    var newPostText = postBody; 
-    $("#current-status-text").append(newPostText); 
+    $("#current-status-text").text("");
+    var newPostText = postBody;
+    $("#current-status-text").append(newPostText);
 
     $.post("/users/posts/", newPost).then(function (result) {
       console.log(result);
@@ -237,6 +238,25 @@ $(document).ready(function () {
       console.log(result);
     });
   }
-     
-    
+
+
+  function submitQuestionaire() {
+    var answers = $("input:radio:checked").map(function () {
+      return (this.value);
+    }).get();
+    var retrievedObject = JSON.parse(sessionStorage.getItem('currentUser'));
+    var id = retrievedObject.id;
+    var name = retrievedObject.name
+    var newUser = {
+      name: name,
+      id: id,
+      scores: answers
+    }
+    console.log(newUser)
+    $.post("/users/friends", newUser).then(function (results) {
+      console.log(results)
+    });
+  }
+
+
 });
