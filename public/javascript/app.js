@@ -249,7 +249,7 @@ $(document).ready(function () {
     var name = retrievedObject.name
     var newUser = {
       name: name,
-      id: id,
+      UserId: id,
       scores: answers
     }
     console.log(newUser)
