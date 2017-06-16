@@ -1,14 +1,14 @@
 {
     "development": {
         "username": "root",
-        "password": "",
+        "password": "mko0MKO)",
         "database": "facebook_test",
         "host": "127.0.0.1",
         "dialect": "mysql"
     },
     "test": {
         "username": "root",
-        "password": "",
+        "password": "mko0MKO)",
         "database": "database_test",
         "host": "127.0.0.1",
         "dialect": "mysql"
