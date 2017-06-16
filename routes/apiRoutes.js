@@ -35,6 +35,22 @@ module.exports = function (app) {
     return res.json(both);
   });
 
+  // this route recieves information about the user from the front-end and updates the "about_user" column in the database 
+  app.put("/users/aboutuser/", function (req, res) {
+    var user = req.body;
+    db.User.update({
+      about: user.aboutUser
+    }, {
+      where: {
+        name: user.name
+      }
+    }).then(function (updatedUser) {
+      console.log("user successfully updated!");
+      console.log(updatedUser);
+      return res.json(updatedUser);
+    });
+  });
+
   // create a route to update with "about me and user composite matches" 
   // maybe one route for each to avoid crossover? or have option req.params to differentiate 
   app.post("/users/", function (req, res) {
@@ -114,7 +130,7 @@ module.exports = function (app) {
   app.post("/users/friends", function (req, res) {
     // example post request from questionaire: 
     //  {name: "Eyad", scores: [1,3,2,1,2,3,4,3,2,1], UserId: 1}
-    
+
     var results = req.body;
     var newUser = {
       name: results.name,
@@ -151,71 +167,54 @@ module.exports = function (app) {
       // console.log("===============================");
       // console.log("resultsList: " , resultsList)
       // console.log("===============================");
-      var length = resultsList.length; 
+      var length = resultsList.length;
       var matchedUser1 = resultsList[0][10];
       var matchedUser2 = resultsList[1][10];
       var matchedUser3 = resultsList[2][10];
-      var enemyUser1 = resultsList[length-1][10]; 
-      var enemyUser2 = resultsList[length-2][10]; 
-      var enemyUser3 = resultsList[length-3][10]; 
-      
-  
+      var enemyUser1 = resultsList[length - 1][10];
+      var enemyUser2 = resultsList[length - 2][10];
+      var enemyUser3 = resultsList[length - 3][10];
+
+
       // use UserId to join matches with particular user 
       db.User.findAll({
         where: {
-          id: {
-            in: [matchedUser1, matchedUser2, matchedUser3, enemyUser1, enemyUser2, enemyUser3],
+          id: { in: [matchedUser1, matchedUser2, matchedUser3, enemyUser1, enemyUser2, enemyUser3],
           }
         }
       }).then(function (bestUser) {
         console.log("===============================");
-        console.log(bestUser); 
+        console.log(bestUser);
         console.log("===============================");
-        var persistMatch = [{
-          name: bestUser[0].name,
-          email: bestUser[0].email,
-          picture: bestUser[0].picture,
-          about: bestUser[0].about,
-          UserId: newUser.UserId
-        }, {
-          name: bestUser[1].name,
-          email: bestUser[1].email,
-          picture: bestUser[1].picture,
-          about: bestUser[1].about,
-          UserId: newUser.UserId
-        }, {
-           name: bestUser[2].name,
-          email: bestUser[2].email,
-          picture: bestUser[2].picture,
-          about: bestUser[2].about,
-          UserId: newUser.UserId
-        }]; 
 
-        var persistEnemy = [{
-          name: bestUser[3].name,
-          email: bestUser[3].email,
-          picture: bestUser[3].picture,
-          about: bestUser[3].about,
-          UserId: newUser.UserId
-        }, {
-          name: bestUser[4].name,
-          email: bestUser[4].email,
-          picture: bestUser[4].picture,
-          about: bestUser[4].about,
-          UserId: newUser.UserId
-        }, {
-           name: bestUser[5].name,
-          email: bestUser[5].email,
-          picture: bestUser[5].picture,
-          about: bestUser[5].about,
-          UserId: newUser.UserId
-        }]; 
+        var persistMatch = [];
+        for (var i = 0; i < 3; i++) {
+          persistMatch.push({
+            name: bestUser[i].name,
+            email: bestUser[i].email,
+            picture: bestUser[i].picture,
+            about: bestUser[i].about,
+            UserId: newUser.UserId
+          });
+        }
+        
+        var persistEnemy = [];
+        for (var i = 3; i < 6; i++) {
+          persistEnemy.push({
+            name: bestUser[i].name,
+            email: bestUser[i].email,
+            picture: bestUser[i].picture,
+            about: bestUser[i].about,
+            UserId: newUser.UserId
+          });
+        }
 
-        db.Matches.bulkCreate(persistMatch).then(function(results) {
-          db.Enemies.bulkCreate(persistEnemy).then(function(otherResult) {
-            var combinedArray = results.concat("enemies-after:", otherResult);  
-            return res.json(combinedArray); 
-          }); 
+
+        db.Matches.bulkCreate(persistMatch).then(function (results) {
+          db.Enemies.bulkCreate(persistEnemy).then(function (otherResult) {
+            var combinedArray = results.concat("enemies-after:", otherResult);
+            return res.json(combinedArray);
+          });
         });
       });
 
