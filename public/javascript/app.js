@@ -24,7 +24,7 @@ $(document).ready(function () {
 
   function showAfterLoginScreen() {
     $("#welcome-screen").hide();
-    $('html').css('background-image', 'none').css('background-color', '#29323c');
+    $('html').css('background-image', 'none').css('background-color', '#515052');
     $("#after-login-screen").show();
     $("#user-about-me").show();
     $("#user-posts").show();
@@ -142,7 +142,7 @@ $(document).ready(function () {
         $("#user-posts-here").append(newPost);
       }
       var singlePost = JSON.parse(JSON.stringify(userPosts[0]));
-      var aboutUser = singlePost["about_user"];
+      var aboutUser = singlePost["about"];
       console.log(aboutUser);
       $('#about-user').val(aboutUser);
       $('#about-user').trigger('autoresize');
@@ -227,10 +227,12 @@ $(document).ready(function () {
     var retrievedObject = JSON.parse(sessionStorage.getItem('currentUser'));
     var userName = retrievedObject.name;
     var aboutUser = $("#about-user").val().trim();
+    var id = retrievedObject.id;
     console.log(aboutUser);
     var updateUser = {
       aboutUser: aboutUser,
-      name: userName
+      name: userName,
+      UserId: id
     }
     $.ajax({
       url: "/users/aboutuser/",
@@ -255,8 +257,55 @@ $(document).ready(function () {
       scores: answers
     }
     console.log(newUser)
-    $.post("/users/friends", newUser).then(function (results) {
-      console.log(results)
+    $.post("/users/friends", newUser).then(function(results) {
+      console.log(results);
+      console.log("picture: ", results[0].picture);
+      $("#top-matches").empty();
+      var slider = $('.carousel');
+      slider.carousel();
+      if (slider.hasClass('initialized')) {
+        slider.removeClass('initialized')
+      }
+      for (var i = 0; i < 3; i++) {
+        var newMatch = $("<a>");
+        newMatch.attr({
+          class: "carousel-item",
+          href: function () {
+            if (i === 0) {
+              return "#one!"
+            } else if (i === 1) {
+              return "#two!"
+            } else if (i === 2) {
+              return "#three"
+            }
+          },
+        });
+        var newImg = $("<img>");
+        newImg.attr("src", results[i].picture);
+        newMatch.append(newImg);
+        $("#top-matches").append(newMatch);
+      }
+      $("#opposite-matches").empty();
+      for (var i = 4; i < 7; i++) {
+        var newMatch = $("<a>");
+        newMatch.attr({
+          class: "carousel-item",
+          href: function () {
+            if (i === 4) {
+              return "#one!"
+            } else if (i === 5) {
+              return "#two!"
+            } else if (i === 6) {
+              return "#three"
+            }
+          },
+        });
+        var newImg = $("<img>");
+        newImg.attr("src", results[i].picture);
+        newMatch.append(newImg);
+        $("#opposite-matches").append(newMatch);
+      }
+      slider.carousel();
     });
   }
 

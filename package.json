@@ -13,8 +13,10 @@
     "auth0-js": "^8.7.0",
     "body-parser": "^1.17.2",
     "express": "^4.15.3",
+    "gmail-send": "^1.2.10",
     "mysql": "^2.13.0",
     "nearestneighbour": "^0.1.0",
+    "nodemailer": "^4.0.1",
     "path": "^0.12.7",
     "sequelize": "^3.30.4"
   },
