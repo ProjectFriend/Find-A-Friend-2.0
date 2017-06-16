@@ -133,10 +133,9 @@ module.exports = function (app) {
         var x = 0;
         for (var i = 0; i < 10; i++) {
           returnArr.push(friend["Question" + (i + 1)]);
-          // console.log("friend ", friend);
         }
         // Adding userId to the 10th index to allow for matching via querying the DB 
-        // returnArr.push("This is the UserId: ", friend.UserId); 
+        // returnArr.push("This is the UserId: ", friend.UserId);
         returnArr.push(friend.UserId);
         return returnArr;
       });
@@ -144,34 +143,52 @@ module.exports = function (app) {
       var newUserScores = newUser.scores;
       var config = {
         objects: friendScores,
-        number: 1
+        number: 3
       };
 
       var nearestNeightbor = require("nearestneighbour")(config);
       var resultsList = nearestNeightbor.nearest(newUserScores);
-      // console.log("resultsList ", resultsList);
-
-      var matchedUser = resultsList[0][10];
-      console.log("matchedUserId " + matchedUser);
+      console.log("===============================");
+      console.log("resultsList: " , resultsList)
+      console.log("===============================");
+      var matchedUser1 = resultsList[0][10];
+      var matchedUser2 = resultsList[1][10];
+      var matchedUser3 = resultsList[2][10];
+  
       // use UserId to join matches with particular user 
       db.User.findAll({
         where: {
-          id: matchedUser
+          id: {
+            in: [matchedUser1, matchedUser2, matchedUser3],
+          }
         }
       }).then(function (bestUser) {
-        
-        var persistMatch = {
+        // console.log("===============================");
+        // console.log(bestUser); 
+        // console.log("===============================");
+        var persistMatch = [{
           name: bestUser[0].name,
           email: bestUser[0].email,
           picture: bestUser[0].picture,
           about: bestUser[0].about,
           UserId: newUser.UserId
-        }
+        }, {
+          name: bestUser[1].name,
+          email: bestUser[1].email,
+          picture: bestUser[1].picture,
+          about: bestUser[1].about,
+          UserId: newUser.UserId
+        }, {
+           name: bestUser[2].name,
+          email: bestUser[2].email,
+          picture: bestUser[2].picture,
+          about: bestUser[2].about,
+          UserId: newUser.UserId
+        }]; 
 
-        db.Matches.create(persistMatch).then(function (results) {
+        db.Matches.bulkCreate(persistMatch).then(function (results) {
           return res.json(results);
         });
-        console.log("best User ", bestUser);
       });
 
     });

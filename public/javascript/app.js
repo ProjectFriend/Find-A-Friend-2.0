@@ -30,7 +30,6 @@ $(document).ready(function () {
     $("#user-posts").show();
     $("#survey-btns-div").show();
     $(".page-footer").show();
-    
   }
 
   function initHandlers() {
@@ -43,6 +42,9 @@ $(document).ready(function () {
     $("#submit-new-post").on("click", submitNewPost);
     $("#submit-new-about").on("click", submitAboutUser);
     $(".button-collapse").sideNav();
+     $('.carousel').carousel({
+        padding:200
+      });
   }
 
   function setSession(authResult) {
@@ -243,11 +245,5 @@ $(document).ready(function () {
   //create a function here to dynamically fill the carousel with clickable matches
   //function renderMatchesPage() {
      
-      $('.carousel').carousel({
-        padding:200
-      });
-      
     
- // }
-
 });
