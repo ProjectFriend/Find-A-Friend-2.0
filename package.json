@@ -17,5 +17,17 @@
     "nearestneighbour": "^0.1.0",
     "path": "^0.12.7",
     "sequelize": "^3.30.4"
+  },
+  "devDependencies": {
+    "browserify": "^14.4.0",
+    "chai": "^4.0.2",
+    "karma": "^1.7.0",
+    "karma-browserify": "^5.1.1",
+    "karma-chrome-launcher": "^2.1.1",
+    "karma-commonjs": "^1.0.0",
+    "karma-mocha-reporter": "^2.2.3",
+    "mocha": "^3.4.2",
+    "nightmare": "^2.10.0",
+    "watchify": "^3.9.0"
   }
 }

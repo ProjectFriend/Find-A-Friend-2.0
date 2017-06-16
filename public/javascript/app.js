@@ -237,13 +237,6 @@ $(document).ready(function () {
       console.log(result);
     });
   }
-
-
-  function renderQuestionsPage() {
-
-  }
-  //create a function here to dynamically fill the carousel with clickable matches
-  //function renderMatchesPage() {
      
     
 });
