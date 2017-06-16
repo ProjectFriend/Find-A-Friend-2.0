@@ -143,29 +143,33 @@ module.exports = function (app) {
       var newUserScores = newUser.scores;
       var config = {
         objects: friendScores,
-        number: 3
       };
 
       var nearestNeightbor = require("nearestneighbour")(config);
       var resultsList = nearestNeightbor.nearest(newUserScores);
-      console.log("===============================");
-      console.log("resultsList: " , resultsList)
-      console.log("===============================");
+      // console.log("===============================");
+      // console.log("resultsList: " , resultsList)
+      // console.log("===============================");
+      var length = resultsList.length; 
       var matchedUser1 = resultsList[0][10];
       var matchedUser2 = resultsList[1][10];
       var matchedUser3 = resultsList[2][10];
+      var enemyUser1 = resultsList[length-1][10]; 
+      var enemyUser2 = resultsList[length-2][10]; 
+      var enemyUser3 = resultsList[length-3][10]; 
+      
   
       // use UserId to join matches with particular user 
       db.User.findAll({
         where: {
           id: {
-            in: [matchedUser1, matchedUser2, matchedUser3],
+            in: [matchedUser1, matchedUser2, matchedUser3, enemyUser1, enemyUser2, enemyUser3],
           }
         }
       }).then(function (bestUser) {
-        // console.log("===============================");
-        // console.log(bestUser); 
-        // console.log("===============================");
+        console.log("===============================");
+        console.log(bestUser); 
+        console.log("===============================");
         var persistMatch = [{
           name: bestUser[0].name,
           email: bestUser[0].email,
@@ -186,8 +190,31 @@ module.exports = function (app) {
           UserId: newUser.UserId
         }]; 
 
-        db.Matches.bulkCreate(persistMatch).then(function (results) {
-          return res.json(results);
+        var persistEnemy = [{
+          name: bestUser[3].name,
+          email: bestUser[3].email,
+          picture: bestUser[3].picture,
+          about: bestUser[3].about,
+          UserId: newUser.UserId
+        }, {
+          name: bestUser[4].name,
+          email: bestUser[4].email,
+          picture: bestUser[4].picture,
+          about: bestUser[4].about,
+          UserId: newUser.UserId
+        }, {
+           name: bestUser[5].name,
+          email: bestUser[5].email,
+          picture: bestUser[5].picture,
+          about: bestUser[5].about,
+          UserId: newUser.UserId
+        }]; 
+
+        db.Matches.bulkCreate(persistMatch).then(function(results) {
+          db.Enemies.bulkCreate(persistEnemy).then(function(otherResult) {
+            var combinedArray = results.concat("enemies-after:", otherResult);  
+            return res.json(combinedArray); 
+          }); 
         });
       });
 
