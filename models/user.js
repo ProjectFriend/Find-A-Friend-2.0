@@ -6,11 +6,7 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true, 
             autoIncrement: true
         }, 
-        
-        gender: {
-            type: DataTypes.STRING,
-        },
-
+    
         email: {
             type: DataTypes.STRING,
         },
