@@ -4,7 +4,7 @@ $(document).ready(function () {
   var webAuth = new auth0.WebAuth({
     domain: "ejqassem.auth0.com",
     clientID: "kNpinf_XmKG9ExgzjJTuQrNN60TAoEOn",
-    redirectUri: "http://localhost:3000/",
+    redirectUri: "https://habibi-demo.herokuapp.com/",
     audience: 'https://' + "ejqassem.auth0.com" + '/userinfo',
     responseType: 'token id_token',
     scope: 'openid profile email'
