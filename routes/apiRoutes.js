@@ -1,5 +1,6 @@
 var db = require("../models");
 var nodemailer = require("./nodeMailer");
+const nn = require('nearest-neighbor');
 /* Randomize array element order in-place. 
        Using Durstenfeld shuffle algorithm. */
 function shuffleArray(array) {
@@ -134,7 +135,7 @@ module.exports = function (app) {
     var results = req.body;
     var newUser = {
       name: results.name,
-      scores: parseInt(results.scores),
+      scores: results.scores.map(Number),
       UserId: results.UserId
     };
 
@@ -144,79 +145,112 @@ module.exports = function (app) {
       }],
       raw: true
     }).then(function (user) {
-      // console.log(user);
+
       var friendScores = user.map(function (friend) {
-        var returnArr = [];
+        console.log(friend);
+        let returnArr = [];
         var x = 0;
         for (var i = 0; i < 10; i++) {
           returnArr.push(friend["Question" + (i + 1)]);
         }
+        var friendObj = {};
         // Adding userId to the 10th index to allow for matching via querying the DB 
-        // returnArr.push("This is the UserId: ", friend.UserId);
-        returnArr.push(friend.UserId);
-        return returnArr;
+        friendObj.name = friend["User.name"];
+        friendObj.scores = returnArr;
+        friendObj.id = friend.UserId;
+        return friendObj;
       });
 
-      var newUserScores = newUser.scores;
-      var config = {
-        objects: friendScores,
+      nn.comparisonMethods.compareScoreArrays = function (a, b) {
+        var sumFriend = a.reduce(function (ax, bx) {
+          return ax + bx;
+        }, 0);
+        var sumUser = b.reduce(function (ax, bx) {
+          return ax + bx;
+        }, 0);
+        return (100 - Math.abs(sumUser - sumFriend)) / 100.0
       };
 
-      var nearestNeightbor = require("nearestneighbour")(config);
-      var resultsList = nearestNeightbor.nearest(newUserScores);
-      // console.log("===============================");
-      // console.log("resultsList: " , resultsList)
-      // console.log("===============================");
-      var length = resultsList.length;
-      var matchedUser1 = resultsList[0][10];
-      var matchedUser2 = resultsList[1][10];
-      var matchedUser3 = resultsList[2][10];
-      var enemyUser1 = resultsList[length - 1][10];
-      var enemyUser2 = resultsList[length - 2][10];
-      var enemyUser3 = resultsList[length - 3][10];
+      var fields = [{
+        name: "scores",
+        measure: nn.comparisonMethods.compareScoreArrays
+      }];
 
+      nn.findMostSimilar(newUser, friendScores, fields, function (nearestNeighbor, probability) {
+        console.log(nearestNeighbor);
+        console.log(probability);
+        var nearestId = nearestNeighbor.id;
 
-      // use UserId to join matches with particular user 
-      db.User.findAll({
-        where: {
-          id: { in: [matchedUser1, matchedUser2, matchedUser3, enemyUser1, enemyUser2, enemyUser3],
-          }
-        }
-      }).then(function (bestUser) {
-        console.log("===============================");
-        console.log(bestUser);
-        console.log("===============================");
-
-        var persistMatch = [];
-        for (var i = 0; i < 3; i++) {
-          persistMatch.push({
-            name: bestUser[i].name,
-            email: bestUser[i].email,
-            picture: bestUser[i].picture,
-            about: bestUser[i].about,
-            UserId: newUser.UserId
-          });
-        }
+        // add probability column to matches DB 
+        // display "Here's your new best friend" and probability 
+        // top matches photo: 
         
-        var persistEnemy = [];
-        for (var i = 3; i < 6; i++) {
-          persistEnemy.push({
-            name: bestUser[i].name,
-            email: bestUser[i].email,
-            picture: bestUser[i].picture,
-            about: bestUser[i].about,
+        //redo questions page to render dynamically 
+        
+        db.User.findAll({
+          where: {
+            id: nearestId
+          }
+        }).then(function (bestUser) {
+          console.log("===============================");
+          console.log(bestUser);
+          console.log("===============================");
+          var persistMatch = {
+            name: bestUser[0].name,
+            email: bestUser[0].email,
+            picture: bestUser[0].picture,
+            about: bestUser[0].about,
             UserId: newUser.UserId
-          });
-        }
-
-
-        db.Matches.bulkCreate(persistMatch).then(function (results) {
-          db.Enemies.bulkCreate(persistEnemy).then(function (otherResult) {
-            var combinedArray = results.concat("enemies-after:", otherResult);
-            return res.json(combinedArray);
-          });
+          }
+          console.log("persistMatch", persistMatch); 
+          db.Matches.create(persistMatch).then(function (bestMatch) {
+            res.json(bestMatch);
+          }); 
         });
+
       });
+
+
+      // db.User.findAll({
+      //   where: {
+      //     id: [matchedUser1, matchedUser2, matchedUser3, enemyUser1, enemyUser2, enemyUser3],
+      //   }
+      // }).then(function (bestUser) {
+      //   console.log("===============================");
+      //   console.log(bestUser);
+      //   console.log("===============================");
+
+      //     var persistMatch = [];
+      //     for (var i = 3; i < 6; i++) {
+      //       persistMatch.push({
+      //         name: bestUser[i].name,
+      //         email: bestUser[i].email,
+      //         picture: bestUser[i].picture,
+      //         about: bestUser[i].about,
+      //         UserId: newUser.UserId
+      //       });
+      //     }
+
+      //     var persistEnemy = [];
+      //     for (var i = 0; i < 3; i++) {
+      //       persistEnemy.push({
+      //         name: bestUser[i].name,
+      //         email: bestUser[i].email,
+      //         picture: bestUser[i].picture,
+      //         about: bestUser[i].about,
+      //         UserId: newUser.UserId
+      //       });
+      //     }
+
+
+      //     db.Matches.bulkCreate(persistMatch).then(function (results) {
+      //       db.Enemies.bulkCreate(persistEnemy).then(function (otherResult) {
+      //         var combinedArray = persistMatch.concat("enemies-after:", persistEnemy);
+      //         console.log(combinedArray);
+      //         return res.json(combinedArray);
+      //       });
+      //     });
+      //   });
 
     });
 

@@ -4,7 +4,7 @@ $(document).ready(function () {
   var webAuth = new auth0.WebAuth({
     domain: "ejqassem.auth0.com",
     clientID: "kNpinf_XmKG9ExgzjJTuQrNN60TAoEOn",
-    redirectUri: "http://localhost:3000/",
+    redirectUri: "https://habibi-demo.herokuapp.com/",
     audience: 'https://' + "ejqassem.auth0.com" + '/userinfo',
     responseType: 'token id_token',
     scope: 'openid profile email'
@@ -24,7 +24,6 @@ $(document).ready(function () {
 
   function showAfterLoginScreen() {
     $("#welcome-screen").hide();
-    $('html').css('background-image', 'none').css('background-color', '#515052');
     $("#after-login-screen").show();
     $("#user-about-me").show();
     $("#user-posts").show();
@@ -257,7 +256,7 @@ $(document).ready(function () {
       scores: answers
     }
     console.log(newUser)
-    $.post("/users/friends", newUser).then(function(results) {
+    $.post("/users/friends", newUser).then(function (results) {
       console.log(results);
       console.log("picture: ", results[0].picture);
       $("#top-matches").empty();
