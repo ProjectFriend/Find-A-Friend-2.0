@@ -261,7 +261,7 @@ $(document).ready(function () {
       console.log("picture: ", results.picture);
       $("#top-matches").empty();
       var probabilityText = $("<h3>");
-      probabilityText.append(`You are a: ${results.probability}% match with ${results.name}!`);
+      probabilityText.append(`You are a ${results.probability}% match with ${results.name}!`);
       probabilityText.attr("class", "center"); 
       $("#top-match-text").append(probabilityText); 
       var slider = $('.carousel');
