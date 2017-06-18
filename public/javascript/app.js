@@ -2,10 +2,10 @@
 
 $(document).ready(function () {
   var webAuth = new auth0.WebAuth({
-    domain: "ejqassem.auth0.com",
-    clientID: "kNpinf_XmKG9ExgzjJTuQrNN60TAoEOn",
-    redirectUri: "https://habibi-demo.herokuapp.com/",
-    audience: 'https://' + "ejqassem.auth0.com" + '/userinfo',
+    domain: 'ejqassem.auth0.com',
+    clientID: 'Hr2tFwRyrmNt0X0e42UpB6UWs9wRPg5S',
+    // redirectUri: replace with heroku URL,
+    audience: 'https://ejqassem.auth0.com/userinfo',
     responseType: 'token id_token',
     scope: 'openid profile email'
   });
@@ -46,7 +46,7 @@ $(document).ready(function () {
       onShow: function (tab) {
         $(".carousel").carousel();
       }
-    })
+    }); 
   }
 
   function setSession(authResult) {
@@ -265,44 +265,20 @@ $(document).ready(function () {
       if (slider.hasClass('initialized')) {
         slider.removeClass('initialized')
       }
-      for (var i = 0; i < 3; i++) {
+      for (var i = 0; i < 1; i++) {
         var newMatch = $("<a>");
         newMatch.attr({
           class: "carousel-item",
           href: function () {
             if (i === 0) {
               return "#one!"
-            } else if (i === 1) {
-              return "#two!"
-            } else if (i === 2) {
-              return "#three"
-            }
+            } 
           },
         });
         var newImg = $("<img>");
         newImg.attr("src", results[i].picture);
         newMatch.append(newImg);
         $("#top-matches").append(newMatch);
-      }
-      $("#opposite-matches").empty();
-      for (var i = 4; i < 7; i++) {
-        var newMatch = $("<a>");
-        newMatch.attr({
-          class: "carousel-item",
-          href: function () {
-            if (i === 4) {
-              return "#one!"
-            } else if (i === 5) {
-              return "#two!"
-            } else if (i === 6) {
-              return "#three"
-            }
-          },
-        });
-        var newImg = $("<img>");
-        newImg.attr("src", results[i].picture);
-        newMatch.append(newImg);
-        $("#opposite-matches").append(newMatch);
       }
       slider.carousel();
     });

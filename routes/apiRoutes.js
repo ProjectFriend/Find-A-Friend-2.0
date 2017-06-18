@@ -146,7 +146,7 @@ module.exports = function (app) {
       raw: true
     }).then(function (user) {
 
-      var friendScores = user.map(function (friend) {
+      var friendScores = user.map(function(friend) {
         console.log(friend);
         let returnArr = [];
         var x = 0;
@@ -161,7 +161,7 @@ module.exports = function (app) {
         return friendObj;
       });
 
-      nn.comparisonMethods.compareScoreArrays = function (a, b) {
+      nn.comparisonMethods.compareScoreArrays = function(a, b) {
         var sumFriend = a.reduce(function (ax, bx) {
           return ax + bx;
         }, 0);
@@ -184,9 +184,9 @@ module.exports = function (app) {
         // add probability column to matches DB 
         // display "Here's your new best friend" and probability 
         // top matches photo: 
-        
+
         //redo questions page to render dynamically 
-        
+
         db.User.findAll({
           where: {
             id: nearestId
@@ -202,58 +202,15 @@ module.exports = function (app) {
             about: bestUser[0].about,
             UserId: newUser.UserId
           }
-          console.log("persistMatch", persistMatch); 
+          console.log("persistMatch", persistMatch);
           db.Matches.create(persistMatch).then(function (bestMatch) {
             res.json(bestMatch);
-          }); 
+          });
         });
-
       });
-
-
-      // db.User.findAll({
-      //   where: {
-      //     id: [matchedUser1, matchedUser2, matchedUser3, enemyUser1, enemyUser2, enemyUser3],
-      //   }
-      // }).then(function (bestUser) {
-      //   console.log("===============================");
-      //   console.log(bestUser);
-      //   console.log("===============================");
-
-      //     var persistMatch = [];
-      //     for (var i = 3; i < 6; i++) {
-      //       persistMatch.push({
-      //         name: bestUser[i].name,
-      //         email: bestUser[i].email,
-      //         picture: bestUser[i].picture,
-      //         about: bestUser[i].about,
-      //         UserId: newUser.UserId
-      //       });
-      //     }
-
-      //     var persistEnemy = [];
-      //     for (var i = 0; i < 3; i++) {
-      //       persistEnemy.push({
-      //         name: bestUser[i].name,
-      //         email: bestUser[i].email,
-      //         picture: bestUser[i].picture,
-      //         about: bestUser[i].about,
-      //         UserId: newUser.UserId
-      //       });
-      //     }
-
-
-      //     db.Matches.bulkCreate(persistMatch).then(function (results) {
-      //       db.Enemies.bulkCreate(persistEnemy).then(function (otherResult) {
-      //         var combinedArray = persistMatch.concat("enemies-after:", persistEnemy);
-      //         console.log(combinedArray);
-      //         return res.json(combinedArray);
-      //       });
-      //     });
-      //   });
-
     });
-
   });
+
+
 
 }
