@@ -3,8 +3,8 @@
 $(document).ready(function () {
   var webAuth = new auth0.WebAuth({
     domain: 'ejqassem.auth0.com',
-    clientID: 'Hr2tFwRyrmNt0X0e42UpB6UWs9wRPg5S',
-    // redirectUri: replace with heroku URL,
+    clientID: 'kNpinf_XmKG9ExgzjJTuQrNN60TAoEOn',
+    redirectUri: 'https://habibi-app.herokuapp.com/',
     audience: 'https://ejqassem.auth0.com/userinfo',
     responseType: 'token id_token',
     scope: 'openid profile email'
