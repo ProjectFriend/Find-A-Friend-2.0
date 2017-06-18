@@ -4,7 +4,7 @@ $(document).ready(function () {
   var webAuth = new auth0.WebAuth({
     domain: 'habibiapp.auth0.com',
     clientID: '0x0gBa86WHg883UiRE8RdABvLiB3yxuB',
-    redirectUri:  'https://habibi-app.herokuapp.com/',
+    redirectUri: 'https://habibi-app.herokuapp.com/',
     audience: 'https://habibiapp.auth0.com/userinfo',
     responseType: 'token id_token',
     scope: 'openid profile email'
@@ -46,7 +46,7 @@ $(document).ready(function () {
       onShow: function (tab) {
         $(".carousel").carousel();
       }
-    }); 
+    });
   }
 
   function setSession(authResult) {
@@ -261,27 +261,21 @@ $(document).ready(function () {
       console.log("picture: ", results.picture);
       $("#top-matches").empty();
       var probabilityText = $("<h3>");
-      probabilityText.append(`You are a: ${results.probability}% match with ${results.name}!`); 
+      probabilityText.append(`You are a: ${results.probability}% match with ${results.name}!`);
       var slider = $('.carousel');
       slider.carousel();
       if (slider.hasClass('initialized')) {
         slider.removeClass('initialized')
       }
-      for (var i = 0; i < 1; i++) {
-        var newMatch = $("<a>");
-        newMatch.attr({
-          class: "carousel-item",
-          href: function () {
-            if (i === 0) {
-              return "#one!"
-            } 
-          },
-        });
-        var newImg = $("<img>");
-        newImg.attr("src", results[i].picture);
-        newMatch.append(newImg);
-        $("#top-matches").append(newMatch);
-      }
+      var newMatch = $("<a>");
+      newMatch.attr({
+        class: "carousel-item",
+        href: "#one!"
+      });
+      var newImg = $("<img>");
+      newImg.attr("src", results.picture);
+      newMatch.append(newImg);
+      $("#top-matches").append(newMatch);
       slider.carousel();
     });
   }
