@@ -262,7 +262,7 @@ $(document).ready(function () {
       $("#top-matches").empty();
       var probabilityText = $("<h3>");
       probabilityText.append(`You are a: ${results.probability}% match with ${results.name}!`);
-      $("#top").append(probabilityText); 
+      $("#top-match-text").append(probabilityText); 
       var slider = $('.carousel');
       slider.carousel();
       if (slider.hasClass('initialized')) {

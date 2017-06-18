@@ -146,7 +146,7 @@ module.exports = function (app) {
       raw: true
     }).then(function (user) {
 
-      var friendScores = user.map(function(friend) {
+      var friendScores = user.map(function (friend) {
         console.log(friend);
         let returnArr = [];
         var x = 0;
@@ -161,7 +161,7 @@ module.exports = function (app) {
         return friendObj;
       });
 
-      nn.comparisonMethods.compareScoreArrays = function(a, b) {
+      nn.comparisonMethods.compareScoreArrays = function (a, b) {
         var sumFriend = a.reduce(function (ax, bx) {
           return ax + bx;
         }, 0);
@@ -180,7 +180,7 @@ module.exports = function (app) {
         console.log(nearestNeighbor);
         console.log(probability);
         var nearestId = nearestNeighbor.id;
-
+        var userProbability = probability;
         // add probability column to matches DB 
         // display "Here's your new best friend" and probability 
         // top matches photo: 
@@ -192,9 +192,9 @@ module.exports = function (app) {
             id: nearestId
           }
         }).then(function (bestUser) {
-          console.log("===============================");
-          console.log(bestUser);
-          console.log("===============================");
+          // console.log("===============================");
+          // console.log(bestUser);
+          // console.log("===============================");
           var persistMatch = {
             name: bestUser[0].name,
             email: bestUser[0].email,
@@ -202,9 +202,16 @@ module.exports = function (app) {
             about: bestUser[0].about,
             UserId: newUser.UserId
           }
-          console.log("persistMatch", persistMatch);
+          // console.log("persistMatch", persistMatch);
           db.Matches.create(persistMatch).then(function (bestMatch) {
-            bestMatch.probability = probability; 
+            // allow for manipulation of returned plain object from sequelize 
+            bestMatch = bestMatch.toJSON(); 
+            // convert probability from decimal to number 
+            bestMatch.probability = probability * 100;
+            console.log("===============================");
+            console.log("bestMatch.probability", bestMatch.probability);
+            console.log("===============================");
+            console.log(bestMatch);
             return res.json(bestMatch);
           });
         });
