@@ -204,7 +204,8 @@ module.exports = function (app) {
           }
           console.log("persistMatch", persistMatch);
           db.Matches.create(persistMatch).then(function (bestMatch) {
-            res.json(bestMatch);
+            bestMatch.probability = probability; 
+            return res.json(bestMatch);
           });
         });
       });

@@ -2,10 +2,10 @@
 
 $(document).ready(function () {
   var webAuth = new auth0.WebAuth({
-    domain: 'ejqassem.auth0.com',
-    clientID: 'kNpinf_XmKG9ExgzjJTuQrNN60TAoEOn',
-    redirectUri: 'https://habibi-app.herokuapp.com/',
-    audience: 'https://ejqassem.auth0.com/userinfo',
+    domain: 'habibiapp.auth0.com',
+    clientID: '0x0gBa86WHg883UiRE8RdABvLiB3yxuB',
+    redirectUri:  'https://habibi-app.herokuapp.com/',
+    audience: 'https://habibiapp.auth0.com/userinfo',
     responseType: 'token id_token',
     scope: 'openid profile email'
   });
@@ -258,8 +258,10 @@ $(document).ready(function () {
     console.log(newUser)
     $.post("/users/friends", newUser).then(function (results) {
       console.log(results);
-      console.log("picture: ", results[0].picture);
+      console.log("picture: ", results.picture);
       $("#top-matches").empty();
+      var probabilityText = $("<h3>");
+      probabilityText.append(`You are a: ${results.probability}% match with ${results.name}!`); 
       var slider = $('.carousel');
       slider.carousel();
       if (slider.hasClass('initialized')) {
